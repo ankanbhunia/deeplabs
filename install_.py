@@ -37,14 +37,14 @@ get_ipython().system_raw('apt-get install cuda-10-0')
 
 if not Path("/content/pretrain").exists():
   print("Downloading CelebA faceset ... ")
-  get_ipython().system_raw('wget -q --no-check-certificate -r 'https://github.com/chervonij/DFL-Colab/releases/download/pretrain-CelebA/pretrain_CelebA.zip' -O /content/pretrain_CelebA.zip')
+  get_ipython().system_raw('wget -q --no-check-certificate -r https://github.com/chervonij/DFL-Colab/releases/download/pretrain-CelebA/pretrain_CelebA.zip -O /content/pretrain_CelebA.zip')
   get_ipython().system_raw('mkdir /content/pretrain')
   get_ipython().system_raw('unzip -q /content/pretrain_CelebA.zip -d /content/pretrain/')
   get_ipython().system_raw('rm /content/pretrain_CelebA.zip')
 
 if not Path("/content/pretrain_Q96").exists():
   print("Downloading Q96 pretrained model ...")
-  get_ipython().system_raw('wget -q --no-check-certificate -r 'https://github.com/chervonij/DFL-Colab/releases/download/Q96_model_pretrained/Q96_model_pretrained.zip' -O /content/pretrain_Q96.zip')
+  get_ipython().system_raw('wget -q --no-check-certificate -r https://github.com/chervonij/DFL-Colab/releases/download/Q96_model_pretrained/Q96_model_pretrained.zip -O /content/pretrain_Q96.zip')
   get_ipython().system_raw('mkdir /content/pretrain_Q96')
   get_ipython().system_raw('unzip -q /content/pretrain_Q96.zip -d /content/pretrain_Q96/')
   get_ipython().system_raw('rm /content/pretrain_Q96.zip')
