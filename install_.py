@@ -28,8 +28,8 @@ if (Mode == "install"):
   fin.write(data)
   fin.close()
 else:
-  %cd /content/DeepFaceLab
-  get_ipython().system_raw('git pull')
+
+  get_ipython().system_raw('/content/DeepFaceLab | git pull')
 
 get_ipython().system_raw('pip install -r /content/DeepFaceLab/requirements-colab.txt')
 get_ipython().system_raw('pip install --upgrade scikit-image')
