@@ -885,9 +885,10 @@ def open_toast1(n, is_open, is_active):
     print('######################################################')
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
-
-    return not is_open, not is_active
-        
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
         
 
 
@@ -902,7 +903,10 @@ def open_toast2(n, is_open, is_active):
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
 
-    return not is_open, not is_active
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
     
 @app.callback(
     [Output("toggle-add-record", "is_open"), Output("Record-addclick", "active")],
@@ -914,7 +918,10 @@ def open_toast3(n, is_open, is_active):
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
 
-    return not is_open, not is_active
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
 
 @server.route('/video_feed')
 def video_feed():
@@ -1286,7 +1293,7 @@ def upload_playback_utube(rang, n_clicks, s):
 
 @app.callback(
     [Output('playback', 'src'), 
-     Output("Upload-addclick", "n_clicks"), 
+     #Output("Upload-addclick", "n_clicks"), 
      Output("temp2", "children"),
      Output("n_upload", "children"),
      Output("my-range-slider", "marks")],
@@ -1330,7 +1337,7 @@ def upload_playback(rang,n_clicks,s):
         length = VID.duration
         output = 'You have added total ' + str(video_index()) + ' video(s). You can add more videos' 
     
-        return [s, 0, 'True',str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return [s, 'True',str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
         
     else:
         
@@ -1363,7 +1370,7 @@ def upload_playback(rang,n_clicks,s):
         frame = base64.b64encode(frame)
         length = end_time - str_time
 
-        return ['data:image/png;base64,{}'.format(frame.decode()), 1, 'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return ['data:image/png;base64,{}'.format(frame.decode()), 'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
 
 
 
@@ -1383,7 +1390,10 @@ def open_toast1(n, is_open, is_active):
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
 
-    return not is_open, not is_active
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
 
 
 @app.callback(
@@ -1396,7 +1406,10 @@ def open_toast2(n, is_open, is_active):
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
 
-    return not is_open, not is_active
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
     
 @app.callback(
     [Output("toggle-add-record_2", "is_open"), Output("Record-addclick_2", "active")],
@@ -1408,7 +1421,10 @@ def open_toast3(n, is_open, is_active):
     print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
     print('######################################################')
 
-    return not is_open, not is_active
+    if n:
+        return not is_open, not is_active
+    else:
+        return  is_open,  is_active
 
 @server.route('/video_feed_')
 def video_feed_():
@@ -1610,7 +1626,7 @@ def update_youtube(n, url):
 
 @app.callback(
     [Output('playback_utube_2', 'src'),
-     Output("Youtube-addclick_2", "n_clicks"), 
+     #Output("Youtube-addclick_2", "n_clicks"), 
      Output("temp1_2", "children"),
      Output("n_utube_2", "children"),
      Output("my-range-slider_utube_2", "marks")],
@@ -1654,7 +1670,7 @@ def upload_playback_utube(rang, n_clicks, s):
 
         
 
-        return [s, 0, 'True', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return [s, 'True', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
 
 
         
@@ -1693,7 +1709,7 @@ def upload_playback_utube(rang, n_clicks, s):
 
 @app.callback(
     [Output('playback_2', 'src'), 
-     Output("Upload-addclick_2", "n_clicks"), 
+     #Output("Upload-addclick_2", "n_clicks"), 
      Output("temp2_2", "children"),
      Output("n_upload_2", "children"),
      Output("my-range-slider_2", "marks")],
@@ -1737,7 +1753,7 @@ def upload_playback(rang,n_clicks,s):
         length = VID.duration
         output = 'You have added total ' + str(video_index2()) + ' video(s). You can add more videos' 
     
-        return [s, 0, 'True',str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return [s,  'True',str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
         
     else:
         
@@ -1771,7 +1787,7 @@ def upload_playback(rang,n_clicks,s):
         frame = base64.b64encode(frame)
         length = end_time - str_time
 
-        return ['data:image/png;base64,{}'.format(frame.decode()), 1, 'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return ['data:image/png;base64,{}'.format(frame.decode()),  'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
 
 
 @app.callback( [Output("toggle-add-Result", "is_open"),
@@ -1782,9 +1798,11 @@ def upload_playback(rang,n_clicks,s):
 
 def update_result(n, intval):
 
-  print('######################################################')
-  print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-  print('######################################################')
+  if dash.callback_context.triggered[0]['prop_id'] != 'interval-2.n_intervals':
+
+      print('######################################################')
+      print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+      print('######################################################')
 
   trigger_id = dash.callback_context.triggered[0]['prop_id']
 
@@ -2024,10 +2042,10 @@ def update_option_input_select(op, ttp):
     [State("Images-addclick", "disabled"),State("Result-addclick", "disabled"), State("start_text_input", "disabled")])
 
 def update_start(n, mode, model_name, intval, d1, d2, d3):
-
-  print('######################################################')
-  print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-  print('######################################################')
+  if dash.callback_context.triggered[0]['prop_id'] != 'interval-1.n_intervals':
+      print('######################################################')
+      print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+      print('######################################################')
 
   global threadon 
   global msglist
