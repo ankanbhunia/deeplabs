@@ -1706,7 +1706,7 @@ def upload_playback_utube(rang, n_clicks, s):
         length = end_time - str_time
         frame = base64.b64encode(frame)
         
-        return ['data:image/png;base64,{}'.format(frame.decode()), 1, 'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
+        return ['data:image/png;base64,{}'.format(frame.decode()), 'False', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
 
 
 
