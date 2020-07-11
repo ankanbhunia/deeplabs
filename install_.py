@@ -1,5 +1,10 @@
 
 import os
+import sys 
+
+sys.path.append('/content/motion-co-seg/')
+sys.path.insert('/content/DeepFaceLab/')
+
 os.system('pip3 install --upgrade moviepy')
 os.system('pip3 install dash')
 os.system('pip3 install dash_core_components')
@@ -13,7 +18,9 @@ Mode = "install"
 
 from pathlib import Path
 if (Mode == "install"):
-  os.system('git clone https://github.com/iperov/DeepFaceLab.git')
+  os.system('git clone https://github.com/ankanbhunia/DeepFaceLab')
+  os.system('git clone https://github.com/AliaksandrSiarohin/motion-cosegmentation motion-co-seg')
+  os.system('git clone https://github.com/AliaksandrSiarohin/face-makeup.PyTorch motion-co-seg/face_parsing')
 
   # fix linux warning
   # /usr/lib/python3.6/multiprocessing/semaphore_tracker.py:143: UserWarning: semaphore_tracker: There appear to be 1 leaked semaphores to clean up at shutdown
@@ -40,15 +47,17 @@ if not Path("/content/pretrain").exists():
   os.system('unzip -q /content/pretrain_CelebA.zip -d /content/pretrain/')
   os.system('rm /content/pretrain_CelebA.zip')
 
-if not Path("/content/pretrain_Q96").exists():
-  print("Downloading Q96 pretrained model ...")
-  os.system('wget -q --no-check-certificate -r https://github.com/chervonij/DFL-Colab/releases/download/Q96_model_pretrained/Q96_model_pretrained.zip -O /content/pretrain_Q96.zip')
-  os.system('mkdir /content/pretrain_Q96')
-  os.system('unzip -q /content/pretrain_Q96.zip -d /content/pretrain_Q96/')
-  os.system('rm /content/pretrain_Q96.zip')
+#if not Path("/content/pretrain_Q96").exists():
+#  print("Downloading Q96 pretrained model ...")
+#  os.system('wget -q --no-check-certificate -r https://github.com/chervonij/DFL-Colab/releases/download/Q96_model_pretrained/Q96_model_pretrained.zip -O /content/pretrain_Q96.zip')
+#  os.system('mkdir /content/pretrain_Q96')
+#  os.system('unzip -q /content/pretrain_Q96.zip -d /content/pretrain_Q96/')
+#  os.system('rm /content/pretrain_Q96.zip')
 
 if not Path("/content/workspace").exists():
   os.system('mkdir /content/workspace; mkdir /content/workspace/data_src; mkdir /content/workspace/data_src/aligned; mkdir /content/workspace/data_dst; mkdir /content/workspace/data_dst/aligned; mkdir /content/workspace/model')  
+
+
 
 import IPython
 from google.colab import output
