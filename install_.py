@@ -2,8 +2,7 @@
 import os
 import sys 
 
-sys.path.append('/content/motion-co-seg/')
-sys.path.insert('/content/DeepFaceLab/')
+
 
 os.system('pip3 install --upgrade moviepy')
 os.system('pip3 install dash')
@@ -21,6 +20,10 @@ if (Mode == "install"):
   os.system('git clone https://github.com/ankanbhunia/DeepFaceLab')
   os.system('git clone https://github.com/AliaksandrSiarohin/motion-cosegmentation motion-co-seg')
   os.system('git clone https://github.com/AliaksandrSiarohin/face-makeup.PyTorch motion-co-seg/face_parsing')
+  
+  
+  sys.path.append('/content/motion-co-seg/')
+  sys.path.append('/content/DeepFaceLab/')
 
   # fix linux warning
   # /usr/lib/python3.6/multiprocessing/semaphore_tracker.py:143: UserWarning: semaphore_tracker: There appear to be 1 leaked semaphores to clean up at shutdown
