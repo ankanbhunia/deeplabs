@@ -1,3 +1,7 @@
+import os
+
+from skimage.transform import resize
+
 import sys
 import torch
 import torch.nn.functional as F
@@ -5,8 +9,13 @@ import matplotlib.patches as mpatches
 import imageio
 import numpy as np
 import matplotlib.pyplot as plt
+
+sys.path.append('/content/motion-co-seg/')
+sys.path.append('/content/DeepFaceLab/')
+sys.path.append('/content/motion-co-seg/face_parsing/cp/')
+
 from part_swap import load_face_parser
-import os
+
 from PIL import Image
 import cv2
 from DFLIMG import DFLIMG
@@ -55,7 +64,7 @@ def visualize_segmentation(image, network, supervised=True, hard=True, colormap=
 
 face_parser = load_face_parser(cpu=False)
 
-for face_frames_path in ["workspace/data_dst/aligned/", "workspace/data_src/aligned/"]
+for face_frames_path in ["workspace/data_src/aligned/", "workspace/data_dst/aligned/"]:
 
     extracted_face_paths = [os.path.join(face_frames_path, i) for i in os.listdir(face_frames_path)]
 

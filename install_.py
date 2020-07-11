@@ -18,8 +18,8 @@ Mode = "install"
 from pathlib import Path
 if (Mode == "install"):
   os.system('git clone https://github.com/ankanbhunia/DeepFaceLab')
-  os.system('git clone https://github.com/AliaksandrSiarohin/motion-cosegmentation motion-co-seg')
-  os.system('git clone https://github.com/AliaksandrSiarohin/face-makeup.PyTorch motion-co-seg/face_parsing')
+  os.system('git clone https://github.com/ankanbhunia/motion-cosegmentation motion-co-seg')
+  os.system('git clone https://github.com/ankanbhunia/face-makeup.PyTorch motion-co-seg/face_parsing')
   
   
   sys.path.append('/content/motion-co-seg/')
