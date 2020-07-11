@@ -61,28 +61,6 @@ if not Path("/content/workspace").exists():
   os.system('mkdir /content/workspace; mkdir /content/workspace/data_src; mkdir /content/workspace/data_src/aligned; mkdir /content/workspace/data_dst; mkdir /content/workspace/data_dst/aligned; mkdir /content/workspace/model')  
 
 
-
-import IPython
-from google.colab import output
-
-display(IPython.display.Javascript('''
- function ClickConnect(){
-   btn = document.querySelector("colab-connect-button")
-   if (btn != null){
-     console.log("Click colab-connect-button"); 
-     btn.click() 
-     }
-   
-   btn = document.getElementById('ok')
-   if (btn != null){
-     console.log("Click reconnect"); 
-     btn.click() 
-     }
-  }
-  
-setInterval(ClickConnect,60000)
-'''))
-
 print("\nDone!")
 os.system('wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
 os.system('unzip ngrok-stable-linux-amd64.zip')
