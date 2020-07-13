@@ -332,7 +332,7 @@ def Main(q, mode, option_id):
         q.put  ('Extracting  Source faces ')
         os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
         q.put  ('Source frame Sorting ')
-        os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by vggface")
+        os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
         q.put  (' Enhancing Source Faces ')
         os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
 
@@ -344,9 +344,12 @@ def Main(q, mode, option_id):
         q.put  ('Extracting Target faces ')
         os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_dst --output-dir /content/workspace/data_dst/aligned --detector s3fd")
         q.put  ('Target frame Sorting ')
-        os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by vggface")
+        os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
         q.put  ('Enhancing Target Faces ')
         os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+        
+        q.put  ('Extracting face masks ')
+        os.system('python face_seg.py')
 
         q.put  ('Processsing Done')
         thr1 = Process(target = save_workspace_data, args=())
@@ -400,7 +403,10 @@ def Main(q, mode, option_id):
         q.put  ('Target frame Sorting ')
         os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by vggface")
         q.put  ('Enhancing Target Faces ')
-        os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+        os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned") 
+        
+        q.put  ('Extracting face masks ')
+        os.system('python face_seg.py')
 
         q.put  ('Processsing Done')
         thr1 = Process(target = save_workspace_data, args=())
@@ -541,6 +547,10 @@ def Main(q, mode, option_id):
         os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by vggface")
         q.put  ('Enhancing Target Faces ')
         os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+        
+        
+        q.put  ('Extracting face masks ')
+        os.system('python face_seg.py')
 
         q.put  ('Processsing Done')
         thr1 = Process(target = save_workspace_data, args=())
