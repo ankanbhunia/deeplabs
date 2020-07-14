@@ -14,6 +14,8 @@ os.system('pip3 install youtube_dl')
 os.system('pip3 install mhyt')
 os.system('pip3 install dash_daq')
 os.system('pip3 install dash-editor-components')
+os.system('pip3 install scipy==1.1.0')
+
 Mode = "install" 
 
 from pathlib import Path

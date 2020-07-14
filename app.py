@@ -250,7 +250,7 @@ while True:
 
       while 1:
 
-        time.sleep(3600)
+        time.sleep(3600*2)
 
         os.system('zip -ur workspace_'+convert_id+'.zip workspace/model'); os.system('cp /content/workspace_'+convert_id+'.zip /content/drive/My\ Drive/')
         #print ('###############################' + 'save_workspace_model')
@@ -444,7 +444,7 @@ while True:
             q.put('#ID-' + convert_id)
                 
                 
-            if len(os.listdir('/content/workspace/model/'))>3:
+            if len(os.listdir('/content/workspace/model/'))>1:
                                 
                 #q.put('Removing any saved models')
             
