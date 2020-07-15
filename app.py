@@ -3235,6 +3235,9 @@ while True:
                 
                 f.close()
                     
+                    
+                    
+                    
             
             thr = Process(target = Convert, args=())
             thr.daemon=True   
