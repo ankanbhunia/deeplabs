@@ -14,7 +14,7 @@ os.system('pip3 install youtube_dl')
 os.system('pip3 install mhyt')
 os.system('pip3 install dash_daq')
 os.system('pip3 install dash-editor-components')
-os.system('pip3 install scipy==1.1.0')
+#os.system('pip3 install scipy==1.1.0')
 
 Mode = "install" 
 
@@ -23,9 +23,7 @@ if (Mode == "install"):
   os.system('git clone https://github.com/ankanbhunia/DeepFaceLab')
   os.system('git clone https://github.com/ankanbhunia/motion-cosegmentation motion-co-seg')
   os.system('git clone https://github.com/ankanbhunia/face-makeup.PyTorch motion-co-seg/face_parsing')
-  os.system('git clone https://github.com/ankanbhunia/pyfacy')
-  os.system('cd pyfacy ; pip3 install .')
-  
+
   sys.path.append('/content/motion-co-seg/')
   sys.path.append('/content/DeepFaceLab/')
 
