@@ -55,7 +55,8 @@ while True:
     
     class merging_vars:
 
-      def __init__(
+      def __init__(self, 
+                    face_type = None,
                    output_face_scale = 0,
                    super_resolution_power = 0,
                    mask_mode = 3,
@@ -77,7 +78,7 @@ while True:
                    vertical_shift = 0
                    ):
 
-      
+        self.face_type = face_type
         self.output_face_scale = output_face_scale
         self.super_resolution_power = super_resolution_power
         self.mask_mode = mask_mode
@@ -1344,15 +1345,16 @@ while True:
     Convert_Tab =  dbc.Row([dbc.Card(
         [   
            
-            loading(dbc.CardHeader(dbc.InputGroup(
+            dbc.CardHeader(dbc.InputGroup(
                     [dbc.InputGroupAddon("Model", addon_type="prepend"), dbc.Select(id = 'convert_model_id', options = option_convert, value = '0'), 
                     dbc.Button(outline=True, id = 'convert_model_continue', active=False, disabled = False, color="success", className="fas fa-check-circle")
             , dbc.Button(outline=True, id = 'refresh_img', active=False, disabled = convert_disabled, color="primary", className="fas fa-redo"), 
             dbc.Button(outline=True, id = 'okay_merge', active=False, disabled = convert_disabled, color="danger", className="fas fa-sign-in-alt")], 
                     size="sm",
-                ))),
+                )),
          
             html.Div(id = 'convert_result', style = {'text-align' : 'center'}),
+            html.Div(id = 'convert_load', style = {'text-align' : 'center'}),
             html.Hr(),
             
             dbc.CardImg(top=True, id = 'Convert_Image'),
@@ -1400,10 +1402,14 @@ while True:
 
 
 
-
-
-
-    dbc.Toast([dbc.InputGroup([dbc.InputGroupAddon("Mask type", addon_type="prepend"),dbc.Select(id = 'mask_mode_', options = [{'label':'dst', "value" :1},
+    dbc.Toast([
+    
+    dbc.InputGroup([dbc.InputGroupAddon("Face type", addon_type="prepend"),dbc.Select(id = 'face_type_', options = [{'label':'Head', "value" :0},
+    {'label':'Face', "value" :1}, 
+    {'label':'Full Face', "value" :2}, 
+    ], value = '0')], size="sm"),
+    
+    dbc.InputGroup([dbc.InputGroupAddon("Mask type", addon_type="prepend"),dbc.Select(id = 'mask_mode_', options = [{'label':'dst', "value" :1},
     {'label':'learned-prd', "value" :2}, 
     {'label':'learned-dst', "value" :3}, 
     {'label':'learned-prd*learned-dst', "value" :4}, 
@@ -2959,11 +2965,7 @@ while True:
           return [ d1, 'Start the Process', 'Choose an option', False, d3, False, False, False, '', False, s4]
           
     
-    
-    
-    @app.callback([Output('convert_model_continue', 'disabled'),
-                   Output('convert_model_id', 'disabled'),
-                   Output('v_plus_size', 'disabled'),
+    @app.callback([Output('v_plus_size', 'disabled'),
                    Output('h_minus_size', 'disabled'),
                    Output('h_plus_size', 'disabled'),
                    Output('v_minus_size', 'disabled'),
@@ -2971,8 +2973,72 @@ while True:
                    Output('h_minus_shift', 'disabled'),
                    Output('h_plus_shift', 'disabled'),
                    Output('v_minus_shift', 'disabled'),
-                   Output('refresh_img', 'disabled'),
+             
                    Output('okay_merge', 'disabled'),
+
+                   Output('refresh_img', 'disabled'),
+                
+                   Output('mask_mode_', 'disabled'),
+                   Output('face_type_', 'disabled'),
+                   Output('mode_', 'disabled'),
+                   
+                   Output('Erode_', 'disabled'),
+                   Output('Blur_', 'disabled'),
+                   Output('color_mode_', 'disabled'),
+                   Output('motion_blur_power_', 'disabled'),
+                   Output('blursharpen_amount_', 'disabled'),
+                   Output('image_denoise_power_', 'disabled'),
+                   Output('color_degrade_power_', 'disabled'),
+                   Output('convert_load', 'children')],
+                   [Input('interval-1', 'n_intervals')],
+                   [State('convert_model_continue', 'n_clicks')]
+                   )
+                   
+    def update_disabled(intval, n):
+    
+    
+        npy_files = [i for i in os.listdir('/tmp') if i.endswith('.npy')]
+    
+            
+        
+        
+        if len(npy_files)>5:
+        
+            isdisabled = False
+            
+            
+        else:
+        
+            isdisabled = True
+            
+    
+        if n:
+        
+            if len(npy_files)>5:
+            
+                msg = ""
+                
+            else:
+            
+                msg =  [html.Br(), "Loading. Please wait. ", dbc.Spinner(size="sm")]   
+    
+    
+    
+    
+        else:
+            
+            msg = ""
+            
+            
+        
+        
+        
+        return [isdisabled]*20 + [msg]
+        
+        
+    @app.callback([Output('convert_model_continue', 'disabled'),
+                   Output('convert_model_id', 'disabled'),
+                   
                   
                   ],
                    [Input('convert_model_continue', 'n_clicks')],
@@ -3002,12 +3068,11 @@ while True:
                     
                     #img = Merger_tune.MergeMaskedFace_test(npy_, cfg)[0]
                     
-                    return [True, True,False, False,False, False,False, False,False, False,False, False ]
+                    return [True, True]
                     
                 else:
                     
-                    return [False, False,convert_disabled, convert_disabled,convert_disabled, convert_disabled,convert_disabled,
-            convert_disabled,convert_disabled, convert_disabled,convert_disabled, convert_disabled]
+                    return [False, False]
                     
                     
             else:
@@ -3039,18 +3104,16 @@ while True:
                     #img = Merger_tune.MergeMaskedFace_test(npy_, cfg)[0]
                     
                     
-                    return [True, True,False, False,False, False,False, False,False, False,False, False]
+                    return [True, True]
                     
                 else:
                     
-                    return [False, False,convert_disabled, convert_disabled,convert_disabled, convert_disabled,convert_disabled,
-            convert_disabled,convert_disabled, convert_disabled,convert_disabled,convert_disabled]
+                    return [False, False]
                     
                     
         else:
             
-            return [False, False,convert_disabled, convert_disabled,convert_disabled, convert_disabled,convert_disabled,
-            convert_disabled,convert_disabled, convert_disabled,convert_disabled, convert_disabled]    
+            return [False, False]    
         
         
         
@@ -3067,6 +3130,7 @@ while True:
                    Input('refresh_img', 'n_clicks'),
                 
                    Input('mask_mode_', 'value'),
+                   Input('face_type_', 'value'),
                    Input('mode_', 'value'),
                    
                    Input('Erode_', 'value'),
@@ -3075,14 +3139,15 @@ while True:
                    Input('motion_blur_power_', 'value'),
                    Input('blursharpen_amount_', 'value'),
                    Input('image_denoise_power_', 'value'),
-                   Input('color_degrade_power_', 'value')
+                   Input('color_degrade_power_', 'value'),
+                   Input('convert_model_continue', 'disabled')
            ], [State('size_step', 'value'),
                 State('shift_step', 'value')]
                    )    
                    
     def update_convert_image(v_plus_size,h_minus_size, h_plus_size, v_minus_size , v_plus_shift, h_minus_shift, h_plus_shift, v_minus_shift,
-                            refresh_img, mask_mode_, mode_, Erode_,Blur_ ,color_mode_, motion_blur_power_, blursharpen_amount_,
-                            image_denoise_power_,color_degrade_power_, stp_size, stp_shift):
+                            refresh_img, mask_mode_, face_type_, mode_, Erode_,Blur_ ,color_mode_, motion_blur_power_, blursharpen_amount_,
+                            image_denoise_power_,color_degrade_power_, stp_size, stp_shift, trigger):
 
         
         trigger_id = dash.callback_context.triggered[0]['prop_id']
@@ -3145,6 +3210,20 @@ while True:
             ind_preview = np.random.choice(20)
         
         
+        
+        
+        if int(face_type_) == 0:
+        
+            face_type = FaceType.HEAD
+            
+        elif int(face_type_) == 1:
+        
+            face_type = FaceType.FULL
+        
+        elif int(face_type_) == 2:
+        
+            face_type = FaceType.WHOLE_FACE
+            
         try:
         
             npy_ = os.path.join('/tmp', npy_files[ind_preview])
@@ -3153,6 +3232,7 @@ while True:
             #print (npy_)
             
             cfg_merge = merging_vars(
+                   face_type = face_type,
                    mask_mode = int(mask_mode_),
                    mode = mode_,
                    erode_mask_modifier = Erode_,
@@ -3265,4 +3345,4 @@ while True:
         
         return done, ""
         
-    app.run_server(debug=False, port =  8000)
+    app.run_server(debug=False, port =  8050)
