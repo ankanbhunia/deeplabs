@@ -39,19 +39,31 @@ while True:
     import signal
     import dash_editor_components
     from flask import request
-
+    import sys
+    sys.path.append('/content/FaceClust')
+    import FaceClust.face_clustering as ffc
     global cvt_id
     cvt_id = None
-
+    global open_choose_box
+    open_choose_box = False
     global npy_files
     npy_files = [i for i in os.listdir('/tmp') if i.endswith('.npy')]
-    
-    import sys
+    from multiprocessing import Process, Value,Manager
+    global src_child
+    global dst_child
+    src_child = ''
+    dst_child = ''
+    import sys  
     sys.path.append('/content/DeepFaceLab')
     from merger import Merger_tune
     import matplotlib.pyplot as plt
     import numpy as np
     from facelib import FaceType
+    global labelsdict
+    manager = Manager()
+    labelsdict = manager.dict()
+    labelsdict['src_face_labels'] = {}
+    labelsdict['dst_face_labels'] = {}
     
     class merging_vars:
 
@@ -313,7 +325,7 @@ while True:
 
     from random import *
 
-    def Main(q, option_id):
+    def Main(q, labelsdict, run, option_id):
         
         #print ('############')
         #print (mode)
@@ -402,18 +414,18 @@ while True:
                     q.put('Error during extracting source faces! ')
                     return False
                 
-                q.put  ('Source frame Sorting ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
-                if p != 0: 
-                    q.put('Error during sorting source faces! ')
-                    return False
+                #q.put  ('Source frame Sorting ')
+                #p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
+                #if p != 0: 
+                #    q.put('Error during sorting source faces! ')
+                #    return False
                 
                 
-                q.put  (' Enhancing Source Faces ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                if p != 0: 
-                    q.put('Error during source face enhancement process! ')
-                    return False
+                #q.put  (' Enhancing Source Faces ')
+                #p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                #if p != 0: 
+                #    q.put('Error during source face enhancement process! ')
+                #    return False
 
                 q.put  ('Extracting Target frames ')
                 p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
@@ -434,17 +446,36 @@ while True:
                     return False
                 
                 
-                q.put  ('Target frame Sorting ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
-                if p != 0: 
-                    q.put('Error during sorting target faces! ')
-                    return False
+                #q.put  ('Target frame Sorting ')
+                #p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
+                #if p != 0: 
+                #    q.put('Error during sorting target faces! ')
+                #    return False
                 
-                q.put  ('Enhancing Target Faces ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
-                if p != 0: 
-                    q.put('Error during target face enhancement process! ')
-                    return False
+                #q.put  ('Enhancing Target Faces ')
+                #p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+                #if p != 0: 
+                #    q.put('Error during target face enhancement process! ')
+                #    return False
+                
+                
+                
+                labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
+                labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
+                
+                
+                run.value = 1
+                
+                
+                while True:
+                
+                    if run.value:
+                    
+                        time.sleep(4)
+                        
+                    else:
+                    
+                        break
                 
                 
                 q.put  ('Extracting face masks ')
@@ -923,6 +954,9 @@ while True:
     global threadon 
 
     threadon = True
+    global threadon_ 
+
+    threadon_ = True
     global gui_queue
     gui_queue = Queue() 
     global slider_prev_instance2 
@@ -1092,7 +1126,11 @@ while True:
         ),dbc.Tooltip('Save', target="save_settings_file"),
     ]))
 
-
+    
+    choose_face = html.Div([html.Div(id = 'source_imgs_faces'),
+    html.Div(id = 'target_imgs_faces'),
+    dbc.Button(outline=True, id = 'okay_face_select', active=False, color="success", className="fas fa-check-circle")])
+    
     controls_start = dbc.Jumbotron(
         [
             html.H1("Start the Process", id  = 'status'),
@@ -1116,7 +1154,7 @@ while True:
             dbc.Toast(Images, id="toggle-add-Images",header="Generated Images",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
             dbc.Toast(Settings, id="toggle-add-Settings",header="Edit configuration file",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
             #dbc.Toast(Result, id="toggle-add-Result",header="Output",is_open=False,icon="primary",dismissable=True),
-            
+            dbc.Toast(choose_face, id="toggle-add-face",header="Choose face profile",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
             html.Hr(className="my-2"),
             #html.P("Don't close this window during the process. You can Play or Download the Generated video anytime by clicking on the Result Tab ", id = 'output_text_3'),
          dcc.Interval(
@@ -1554,7 +1592,8 @@ while True:
             html.Div(id = 'temp1_2', style = {'display': 'none'})    ,
             html.Div(id = 'temp2_2', style = {'display': 'none'}),
             html.Div(id = 'tempvar', style = {'display': 'none'}), 
-            html.Div(id = 'refresh__', style = {'display': 'none'})        
+            html.Div(id = 'refresh__', style = {'display': 'none'})   ,
+            html.Div(id = 'confirm_delete', style = {'display': 'none'})                    
     ],fluid=True, style = {'width':'60%'}
     )
 
@@ -2802,13 +2841,16 @@ while True:
                     Output("half_face", "disabled"),
                     Output("modal_error_details", "children"),
                     Output("modal_error", "is_open"),
-                    Output("interval-1", "interval")
+                    Output("interval-1", "interval"),
+                    Output("toggle-add-face", "is_open"),
+                    Output("source_imgs_faces", "children"),
+                    Output("target_imgs_faces", "children"),
                     ],
                   
-        [Input('start_text_continue', 'n_clicks'), Input('interval-1', 'n_intervals')],
-        [State("Images-addclick", "disabled"), State('start_text_input', 'value'), State("start_text_input", "disabled"), State("full_face", "checked"),State("head", "checked"), State("half_face", "checked"), State("interval-1", "interval")])
+        [Input('start_text_continue', 'n_clicks'),Input('interval-1', 'n_intervals'), Input('confirm_delete', 'children')],
+        [State("toggle-add-face", "is_open"),State("Images-addclick", "disabled"), State('start_text_input', 'value'), State("start_text_input", "disabled"), State("full_face", "checked"),State("head", "checked"), State("half_face", "checked"), State("interval-1", "interval")])
 
-    def update_start(n, intval, d1, model_name, d3, s1, s2, s3, s4):
+    def update_start(n, intval,confirm_delete, t1, d1, model_name, d3, s1, s2, s3, s4):
 
       if dash.callback_context.triggered[0]['prop_id'] != 'interval-1.n_intervals':
           print('######################################################')
@@ -2823,6 +2865,10 @@ while True:
       global gui_queue
       global cvt_id
       global thread_list
+      global threadon_
+      global src_child 
+      global dst_child
+      global open_choose_box
       
       trigger_id = dash.callback_context.triggered[0]['prop_id']
       
@@ -2861,11 +2907,16 @@ while True:
       
           global watch
         
-        
+          global labelsdict
+          global run
 
           if threadon and trigger_id == 'start_text_continue.n_clicks':
+            
+            
+            run = Value("i", 0)
+            
           
-            thr = Process(target = Main, args=(gui_queue, model_name,))
+            thr = Process(target = Main, args=(gui_queue, labelsdict, run, model_name,))
             
             thr.start()
             thread_list.append(thr)
@@ -2879,6 +2930,71 @@ while True:
 
             threadon = False
 
+          if not threadon_:
+          
+            src_child = dash.no_update
+            dst_child = dash.no_update
+            
+          if run.value and threadon_:
+             
+            if len(labelsdict['src_face_labels']) <=1 and len(labelsdict['dst_face_labels']) <=1:
+            
+                run.value = 0
+                
+            else:
+            
+                src_imgs = []
+                
+                print (labelsdict['src_face_labels'])
+                
+                
+                for cli in labelsdict['src_face_labels']:
+                    
+                    img = cv2.imread(labelsdict['src_face_labels'][cli][0])
+                    
+                    ret, frame = cv2.imencode('.png', img)
+
+                    frame = base64.b64encode(frame)
+
+                    src_imgs.append('data:image/png;base64,{}'.format(frame.decode()))
+                    
+                dst_imgs = []
+            
+                for cli in labelsdict['dst_face_labels']:
+                    
+                    img = cv2.imread(labelsdict['dst_face_labels'][cli][0])
+                    
+                    ret, frame = cv2.imencode('.png', img)
+
+                    frame = base64.b64encode(frame)
+
+                    dst_imgs.append('data:image/png;base64,{}'.format(frame.decode()))    
+                    
+                print ('#######################################################')
+                print (len(src_imgs))
+                print (len(dst_imgs))
+                src_child  = dbc.CardGroup([dbc.Card([dbc.CardBody( html.Div(dbc.Checkbox(id = 'src_img_'+ str(idx) )), style = {'margin':'auto'}),
+                        dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, 
+                        src=src_img, bottom=True), html.Br()],style={"width": "6rem","height": "8rem"}) for idx, src_img in enumerate(src_imgs)  ])
+                
+                dst_child  = dbc.CardGroup([dbc.Card([dbc.CardBody( html.Div(dbc.Checkbox(id = 'dst_img_'+ str(idx) )), style = {'margin':'auto'}),
+                        dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, 
+                        src=dst_img, bottom=True), html.Br()],style={"width": "6rem","height": "8rem"}) for idx, dst_img in enumerate(dst_imgs)  ])
+                
+                
+                
+                open_choose_box = True
+                threadon_ = False
+
+          
+          
+          if trigger_id == 'confirm_delete.children':
+          
+            open_choose_box = False
+            
+            run.value = 0
+            
+            
           
           try:
               message = gui_queue.get_nowait()
@@ -2913,7 +3029,7 @@ while True:
                 
                
                 
-                return [d1, heading_update, 'Training stopped', True, True, True, True, True, error, True, 1000000]
+                return [d1, heading_update, 'Training stopped', True, True, True, True, True, error, True, 1000000, open_choose_box, src_child, dst_child]
                 
                 
                 
@@ -2958,12 +3074,59 @@ while True:
             header = ''
           
           
-          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True, True, True, '', False, s4]
+          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True, True, True, '', False, s4, open_choose_box, src_child, dst_child]
           
       else:
       
-          return [ d1, 'Start the Process', 'Choose an option', False, d3, False, False, False, '', False, s4]
-          
+          return [ d1, 'Start the Process', 'Choose an option', False, d3, False, False, False, '', False, s4, open_choose_box, src_child, dst_child]
+    
+
+    @app.callback(Output('confirm_delete', 'children'),
+                   [Input('okay_face_select', 'n_clicks')],
+                   [State('src_img_'+ str(idx), 'checked') for idx in range(len(labelsdict['src_face_labels']))]+
+                   [State('dst_img_'+ str(idx), 'checked') for idx in range(len(labelsdict['dst_face_labels']))])
+                   
+    
+    def update_(n, *checked):
+    
+        if n:
+            print (checked)
+            global labelsdict
+            
+            src_n = len(labelsdict['src_face_labels'])
+            dst_n = len(labelsdict['dst_face_labels'])
+            
+            for i,j in zip(checked[:src_n], labelsdict['src_face_labels'].keys()):
+
+
+                if not i:
+                
+                    for k in labelsdict['src_face_labels'][j]:
+                    
+                        print (k)
+                    
+                        os.remove(k)
+                        
+                        
+            for i,j in zip(checked[src_n:], labelsdict['dst_face_labels'].keys()):
+
+
+                if not i:
+                
+                    for k in labelsdict['dst_face_labels'][j]:
+                        print (k)
+                        os.remove(k)
+
+
+
+
+            return  ' '   
+
+
+
+
+
+    
     
     @app.callback([Output('v_plus_size', 'disabled'),
                    Output('h_minus_size', 'disabled'),
