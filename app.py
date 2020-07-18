@@ -3157,7 +3157,7 @@ while True:
             header = ''
           
           
-          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True,  '', False, s4, open_choose_box, cols]
+          return [ img_disabled, heading_update,['['+header+'] '+msglist, dbc.Spinner(size = "sm")], True, True, True,  '', False, s4, open_choose_box, cols]
           
       else:
       
