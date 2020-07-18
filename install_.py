@@ -23,6 +23,7 @@ if (Mode == "install"):
   os.system('git clone https://github.com/ankanbhunia/DeepFaceLab')
   os.system('git clone https://github.com/ankanbhunia/motion-cosegmentation motion-co-seg')
   os.system('git clone https://github.com/ankanbhunia/face-makeup.PyTorch motion-co-seg/face_parsing')
+  os.system('git clone http://github.com/ankanbhunia/FaceClust/')
 
   sys.path.append('/content/motion-co-seg/')
   sys.path.append('/content/DeepFaceLab/')
