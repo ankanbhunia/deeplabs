@@ -761,83 +761,83 @@ while True:
                             
                         
                         q.put  ('Extracting Source frames ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/")
-                        if p != 0: 
-                            q.put('Error while extracting source frames! ')
-                            return False
-                        
-                        q.put  ('Denoising Source frames ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
-                        if p != 0: 
-                            q.put('Error while denoising source frames! ')
-                            return False
-                        
-                        q.put  ('Extracting Source faces ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
-                        if p != 0: 
-                            q.put('Error during extracting source faces! ')
-                            return False
-                        
-                       
-                        
-                        
+                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/")
+                    if p != 0: 
+                        q.put('Error while extracting source frames! ')
+                        return False
+                    
+                    q.put  ('Denoising Source frames ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
+                    if p != 0: 
+                        q.put('Error while denoising source frames! ')
+                        return False
+                    
+                    q.put  ('Extracting Source faces ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
+                    if p != 0: 
+                        q.put('Error during extracting source faces! ')
+                        return False
+                    
+                   
+                    
+                    
 
-                        q.put  ('Extracting Target frames ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
-                        if p != 0: 
-                            q.put('Error while extracting target frames! ')
-                            return False
+                    q.put  ('Extracting Target frames ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
+                    if p != 0: 
+                        q.put('Error while extracting target frames! ')
+                        return False
+                    
+                    q.put  ('Denoising Target frames ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_dst --factor 1")
+                    if p != 0: 
+                        q.put('Error while denoising target frames! ')
+                        return False
+                    
+                    q.put  ('Extracting Target faces ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_dst --output-dir /content/workspace/data_dst/aligned --detector s3fd")
+                    if p != 0: 
+                        q.put('Error during extracting target faces! ')
+                        return False
+                    
+                    
+                    
+                    q.put  ('Face clustering')
+                    
+                    
+                    labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
+                    labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
+                    
+                    
+                    run.value = 1
+                    
+                    
+                    while True:
+                    
+                        if run.value:
                         
-                        q.put  ('Denoising Target frames ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_dst --factor 1")
-                        if p != 0: 
-                            q.put('Error while denoising target frames! ')
-                            return False
-                        
-                        q.put  ('Extracting Target faces ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_dst --output-dir /content/workspace/data_dst/aligned --detector s3fd")
-                        if p != 0: 
-                            q.put('Error during extracting target faces! ')
-                            return False
-                        
-                        
-                        
-                        q.put  ('Face clustering')
-                        
-                        
-                        labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
-                        labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
-                        
-                        
-                        run.value = 1
-                        
-                        
-                        while True:
-                        
-                            if run.value:
+                            time.sleep(4)
                             
-                                time.sleep(4)
-                                
-                            else:
-                            
-                                break
+                        else:
                         
+                            break
+                    
+                    
+                    
+                    
+                    
+                    
+                    q.put  (' Enhancing Source Faces ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                    if p != 0: 
+                        q.put('Error during source face enhancement process! ')
+                        return False
                         
-                        
-                        
-                        
-                        
-                        q.put  (' Enhancing Source Faces ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                        if p != 0: 
-                            q.put('Error during source face enhancement process! ')
-                            return False
-                            
-                        q.put  ('Enhancing Target Faces ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
-                        if p != 0: 
-                            q.put('Error during target face enhancement process! ')
-                            return False
+                    q.put  ('Enhancing Target Faces ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+                    if p != 0: 
+                        q.put('Error during target face enhancement process! ')
+                        return False
                         
                         
                         q.put  ('Extracting face masks ')
@@ -3157,7 +3157,7 @@ while True:
             header = ''
           
           
-          return [ img_disabled, heading_update,['['+header+'] '+msglist, dbc.Spinner(size = "sm")], True, True, True,  '', False, s4, open_choose_box, cols]
+          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True,  '', False, s4, open_choose_box, cols]
           
       else:
       
