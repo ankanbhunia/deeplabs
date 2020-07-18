@@ -49,10 +49,8 @@ while True:
     global npy_files
     npy_files = [i for i in os.listdir('/tmp') if i.endswith('.npy')]
     from multiprocessing import Process, Value,Manager
-    global src_child
-    global dst_child
-    src_child = ''
-    dst_child = ''
+    global cols
+    cols = ''
     import sys  
     sys.path.append('/content/DeepFaceLab')
     from merger import Merger_tune
@@ -60,10 +58,24 @@ while True:
     import numpy as np
     from facelib import FaceType
     global labelsdict
+    global run
+    run = Value("i", 0)
     manager = Manager()
     labelsdict = manager.dict()
     labelsdict['src_face_labels'] = {}
     labelsdict['dst_face_labels'] = {}
+    global total_src_frames
+    global total_src_frames_paths
+    total_src_frames = 0
+    total_src_frames_paths = []
+    global src_face_list
+    src_face_list = []
+    global total_dst_frames
+    total_dst_frames = 0
+    global total_dst_frames_paths
+    total_dst_frames_paths = []
+    global dst_face_list
+    dst_face_list = []
     
     class merging_vars:
 
@@ -414,18 +426,9 @@ while True:
                     q.put('Error during extracting source faces! ')
                     return False
                 
-                #q.put  ('Source frame Sorting ')
-                #p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
-                #if p != 0: 
-                #    q.put('Error during sorting source faces! ')
-                #    return False
+               
                 
                 
-                #q.put  (' Enhancing Source Faces ')
-                #p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                #if p != 0: 
-                #    q.put('Error during source face enhancement process! ')
-                #    return False
 
                 q.put  ('Extracting Target frames ')
                 p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
@@ -446,18 +449,8 @@ while True:
                     return False
                 
                 
-                #q.put  ('Target frame Sorting ')
-                #p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
-                #if p != 0: 
-                #    q.put('Error during sorting target faces! ')
-                #    return False
                 
-                #q.put  ('Enhancing Target Faces ')
-                #p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
-                #if p != 0: 
-                #    q.put('Error during target face enhancement process! ')
-                #    return False
-                
+                q.put  ('Face clustering')
                 
                 
                 labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
@@ -476,6 +469,27 @@ while True:
                     else:
                     
                         break
+                
+                
+                
+                
+                
+                
+                q.put  (' Enhancing Source Faces ')
+                p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                if p != 0: 
+                    q.put('Error during source face enhancement process! ')
+                    return False
+                    
+                q.put  ('Enhancing Target Faces ')
+                p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+                if p != 0: 
+                    q.put('Error during target face enhancement process! ')
+                    return False
+                
+                
+                
+                
                 
                 
                 q.put  ('Extracting face masks ')
@@ -595,18 +609,9 @@ while True:
                         q.put('Error during extracting source faces! ')
                         return False
                     
-                    q.put  ('Source frame Sorting ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
-                    if p != 0: 
-                        q.put('Error during sorting source faces! ')
-                        return False
+                   
                     
                     
-                    q.put  (' Enhancing Source Faces ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                    if p != 0: 
-                        q.put('Error during source face enhancement process! ')
-                        return False
 
                     q.put  ('Extracting Target frames ')
                     p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
@@ -627,12 +632,38 @@ while True:
                         return False
                     
                     
-                    q.put  ('Target frame Sorting ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
-                    if p != 0: 
-                        q.put('Error during sorting target faces! ')
-                        return False
                     
+                    q.put  ('Face clustering')
+                    
+                    
+                    labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
+                    labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
+                    
+                    
+                    run.value = 1
+                    
+                    
+                    while True:
+                    
+                        if run.value:
+                        
+                            time.sleep(4)
+                            
+                        else:
+                        
+                            break
+                    
+                    
+                    
+                    
+                    
+                    
+                    q.put  (' Enhancing Source Faces ')
+                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                    if p != 0: 
+                        q.put('Error during source face enhancement process! ')
+                        return False
+                        
                     q.put  ('Enhancing Target Faces ')
                     p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
                     if p != 0: 
@@ -747,18 +778,9 @@ while True:
                             q.put('Error during extracting source faces! ')
                             return False
                         
-                        q.put  ('Source frame Sorting ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_src/aligned --by hist")
-                        if p != 0: 
-                            q.put('Error during sorting source faces! ')
-                            return False
+                       
                         
                         
-                        q.put  (' Enhancing Source Faces ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                        if p != 0: 
-                            q.put('Error during source face enhancement process! ')
-                            return False
 
                         q.put  ('Extracting Target frames ')
                         p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
@@ -779,12 +801,38 @@ while True:
                             return False
                         
                         
-                        q.put  ('Target frame Sorting ')
-                        p = os.system("echo | python /content/DeepFaceLab/main.py sort --input-dir /content/workspace/data_dst/aligned --by hist")
-                        if p != 0: 
-                            q.put('Error during sorting target faces! ')
-                            return False
                         
+                        q.put  ('Face clustering')
+                        
+                        
+                        labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
+                        labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
+                        
+                        
+                        run.value = 1
+                        
+                        
+                        while True:
+                        
+                            if run.value:
+                            
+                                time.sleep(4)
+                                
+                            else:
+                            
+                                break
+                        
+                        
+                        
+                        
+                        
+                        
+                        q.put  (' Enhancing Source Faces ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                        if p != 0: 
+                            q.put('Error during source face enhancement process! ')
+                            return False
+                            
                         q.put  ('Enhancing Target Faces ')
                         p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
                         if p != 0: 
@@ -1101,11 +1149,12 @@ while True:
 
 
     Progress =  html.Div([dbc.InputGroup(
-                [dbc.InputGroupAddon("Model", addon_type="prepend"), dbc.Select(id = 'start_text_input', options = option_, value = '0'), 
+                [dbc.InputGroupAddon("Model", addon_type="prepend"), dbc.Select(id = 'start_text_input', options = option_, value = '0'), dbc.Select(id = 'face_type_select', 
+                options = [{'label' : 'Head', 'value' : '0'}, {'label' : 'Full face', 'value' : '1'}, {'label' : 'Face', 'value' : '2'}], value = '0', style = {'width': '30px'}),
                 dbc.Button(outline=True, id = 'start_text_continue', active=False, disabled = False, color="success", className="fas fa-check-circle")
         ], 
                 size="sm",
-            ), dbc.CardDeck([col2, col1, col3])]), #dcc.RadioItems(id = 'Progress_select', value = ''), html.Hr(id = 'hr2'), 
+            )]), #dcc.RadioItems(id = 'Progress_select', value = ''), html.Hr(id = 'hr2'), 
     #dbc.Button('Continue', size="sm", id = 'start_text_continue'), 
     #html.Hr(id = 'hr3'), html.Div(id = 'progress_field')]
 
@@ -1127,9 +1176,9 @@ while True:
     ]))
 
     
-    choose_face = html.Div([html.Div(id = 'source_imgs_faces'),
-    html.Div(id = 'target_imgs_faces'),
-    dbc.Button(outline=True, id = 'okay_face_select', active=False, color="success", className="fas fa-check-circle")])
+    choose_face = html.Div([html.Div(id = 'all_imgs_faces'), html.Br(),
+    
+    dbc.Button('Next ', outline=True, id = 'okay_face_select', active=False, color="success",  size = 'sm',  style = {'margin-left': 'auto', 'margin-right': 'auto'}), html.Div(id = 'okay_face_select_text')])
     
     controls_start = dbc.Jumbotron(
         [
@@ -1154,7 +1203,7 @@ while True:
             dbc.Toast(Images, id="toggle-add-Images",header="Generated Images",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
             dbc.Toast(Settings, id="toggle-add-Settings",header="Edit configuration file",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
             #dbc.Toast(Result, id="toggle-add-Result",header="Output",is_open=False,icon="primary",dismissable=True),
-            dbc.Toast(choose_face, id="toggle-add-face",header="Choose face profile",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "800px"}),
+            dbc.Toast(choose_face, id="toggle-add-face",header="Choose face profile",is_open=False,icon="primary",dismissable=True,  style={"maxWidth": "400px"}),
             html.Hr(className="my-2"),
             #html.P("Don't close this window during the process. You can Play or Download the Generated video anytime by clicking on the Result Tab ", id = 'output_text_3'),
          dcc.Interval(
@@ -2836,21 +2885,21 @@ while True:
                    # Output("Progress_select", "style"),
                     Output("start_text_continue", "disabled"),
                     Output("start_text_input", "disabled"),
-                    Output("full_face", "disabled"),
-                    Output("head", "disabled"),
-                    Output("half_face", "disabled"),
+                    Output("face_type_select", "disabled"),
+                    #Output("head", "disabled"),
+                    #Output("half_face", "disabled"),
                     Output("modal_error_details", "children"),
                     Output("modal_error", "is_open"),
                     Output("interval-1", "interval"),
                     Output("toggle-add-face", "is_open"),
-                    Output("source_imgs_faces", "children"),
-                    Output("target_imgs_faces", "children"),
+                    Output("all_imgs_faces", "children"),
+
                     ],
                   
         [Input('start_text_continue', 'n_clicks'),Input('interval-1', 'n_intervals'), Input('confirm_delete', 'children')],
-        [State("toggle-add-face", "is_open"),State("Images-addclick", "disabled"), State('start_text_input', 'value'), State("start_text_input", "disabled"), State("full_face", "checked"),State("head", "checked"), State("half_face", "checked"), State("interval-1", "interval")])
+        [State("toggle-add-face", "is_open"),State("Images-addclick", "disabled"), State('start_text_input', 'value'), State("start_text_input", "disabled"), State("face_type_select", "value"), State("interval-1", "interval")])
 
-    def update_start(n, intval,confirm_delete, t1, d1, model_name, d3, s1, s2, s3, s4):
+    def update_start(n, intval,confirm_delete, t1, d1, model_name, d3, s1, s4):
 
       if dash.callback_context.triggered[0]['prop_id'] != 'interval-1.n_intervals':
           print('######################################################')
@@ -2866,29 +2915,29 @@ while True:
       global cvt_id
       global thread_list
       global threadon_
-      global src_child 
-      global dst_child
+
+      global cols
       global open_choose_box
       
       trigger_id = dash.callback_context.triggered[0]['prop_id']
       
       if n is not None and trigger_id == 'start_text_continue.n_clicks':
       
-          if s1 == True:
-          
-            with open('/content/DeepFaceLab/settings.py', 'a') as f:
-
-                f.write("\nFace_Type = 'wf'" + "\n")
-                f.close()
-                
-          elif s2 == True:
+          if s1 == "0":
           
             with open('/content/DeepFaceLab/settings.py', 'a') as f:
 
                 f.write("\nFace_Type = 'head'" + "\n")
                 f.close()
                 
-          elif  s3 == True:
+          elif s1 == "1":
+          
+            with open('/content/DeepFaceLab/settings.py', 'a') as f:
+
+                f.write("\nFace_Type = 'wf'" + "\n")
+                f.close()
+                
+          elif  s1 == "2":
           
             with open('/content/DeepFaceLab/settings.py', 'a') as f:
 
@@ -2913,7 +2962,7 @@ while True:
           if threadon and trigger_id == 'start_text_continue.n_clicks':
             
             
-            run = Value("i", 0)
+            
             
           
             thr = Process(target = Main, args=(gui_queue, labelsdict, run, model_name,))
@@ -2932,8 +2981,8 @@ while True:
 
           if not threadon_:
           
-            src_child = dash.no_update
-            dst_child = dash.no_update
+            cols = dash.no_update
+            
             
           if run.value and threadon_:
              
@@ -2943,45 +2992,79 @@ while True:
                 
             else:
             
-                src_imgs = []
+                #src_imgs = []
                 
                 print (labelsdict['src_face_labels'])
                 
                 
-                for cli in labelsdict['src_face_labels']:
+                #for cli in labelsdict['src_face_labels']:
                     
-                    img = cv2.imread(labelsdict['src_face_labels'][cli][0])
+                #    img = cv2.imread(labelsdict['src_face_labels'][cli][0])
                     
-                    ret, frame = cv2.imencode('.png', img)
+                ##    ret, frame = cv2.imencode('.png', img)
 
-                    frame = base64.b64encode(frame)
-
-                    src_imgs.append('data:image/png;base64,{}'.format(frame.decode()))
-                    
-                dst_imgs = []
+                 #   frame = base64.b64encode(frame)
+#
+                 #   src_imgs.append('data:image/png;base64,{}'.format(frame.decode()))
+                 #   
+                #dst_imgs = []
             
-                for cli in labelsdict['dst_face_labels']:
+                #for cli in labelsdict['dst_face_labels']:
                     
-                    img = cv2.imread(labelsdict['dst_face_labels'][cli][0])
+                 #   img = cv2.imread(labelsdict['dst_face_labels'][cli][0])
                     
-                    ret, frame = cv2.imencode('.png', img)
+                 #   ret, frame = cv2.imencode('.png', img)
 
-                    frame = base64.b64encode(frame)
+                #    frame = base64.b64encode(frame)
 
-                    dst_imgs.append('data:image/png;base64,{}'.format(frame.decode()))    
+                 #   dst_imgs.append('data:image/png;base64,{}'.format(frame.decode()))    
                     
-                print ('#######################################################')
-                print (len(src_imgs))
-                print (len(dst_imgs))
-                src_child  = dbc.CardGroup([dbc.Card([dbc.CardBody( html.Div(dbc.Checkbox(id = 'src_img_'+ str(idx) )), style = {'margin':'auto'}),
-                        dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, 
-                        src=src_img, bottom=True), html.Br()],style={"width": "6rem","height": "8rem"}) for idx, src_img in enumerate(src_imgs)  ])
-                
-                dst_child  = dbc.CardGroup([dbc.Card([dbc.CardBody( html.Div(dbc.Checkbox(id = 'dst_img_'+ str(idx) )), style = {'margin':'auto'}),
-                        dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, 
-                        src=dst_img, bottom=True), html.Br()],style={"width": "6rem","height": "8rem"}) for idx, dst_img in enumerate(dst_imgs)  ])
+                #print ('#######################################################')
+                #print (len(src_imgs))
+                #print (lesrc_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', cv2.imread(labelsdict['src_face_labels'][0][0]))[-1]).decode())n(dst_imgs))
                 
                 
+                src_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['src_face_labels'][0][0]), height = 64))[-1]).decode())
+                dst_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['dst_face_labels'][0][0]), height = 64))[-1]).decode())
+                
+                
+                
+                
+                
+                src_child_  = loading(dbc.Card(
+                                    [
+                                        dbc.CardHeader(dbc.InputGroup([dbc.Select(id = 'select_src_face',
+                options = [{"label":"face_"+str(idx),"value":str(idx)} for idx in range(len(labelsdict['src_face_labels']))], value = '0'),
+                dbc.Button(outline=True, id = 'add_src_face', active=False, disabled = False, color="primary", className="fas fa-user-plus")], size="sm")),
+                                        
+                                        dbc.CardImg(style = { 'margin':'auto', 'width' : '150px', 'height': '150px'}, 
+                                        src=src_img, bottom=True, id = 'src_face_img'),
+                                        dcc.Slider(id = 'src_slider', min = 0, max = len(labelsdict['src_face_labels'][0]), step = 1, value = 0,
+                                            marks = {int(len(labelsdict['src_face_labels'][0])/2):str(len(labelsdict['src_face_labels'][0])) + ' frames'}),
+                                        dbc.CardFooter("0 frames added", id = 'src_frames_nos', style = {'margin':'auto'}),
+                                        
+                                    ]
+                                ))
+                                              
+                dst_child_  = loading(dbc.Card(
+                                    [
+                                        dbc.CardHeader(dbc.InputGroup([dbc.Select(id = 'select_dst_face',
+                options = [{"label":"face_"+str(idx),"value":str(idx)} for idx in range(len(labelsdict['dst_face_labels']))], value = '0'),
+                dbc.Button(outline=True, id = 'add_dst_face', active=False, disabled = False, color="primary", className="fas fa-user-plus")], size="sm")),
+                                        
+                                        dbc.CardImg(style = {'margin':'auto', 'width' : '150px', 'height': '150px'}, 
+                                        src=dst_img, bottom=True, id = 'dst_face_img'),
+                                        dcc.Slider(id = 'dst_slider', min = 0, max = len(labelsdict['dst_face_labels'][0]), step = 1, value = 0,
+                                        marks = {int(len(labelsdict['dst_face_labels'][0])/2):str(len(labelsdict['dst_face_labels'][0])) + ' frames'}),
+                                        dbc.CardFooter("0 frames added", id = 'dst_frames_nos',style = {'margin':'auto'}),
+                                        
+                                    ]
+                                ))
+                
+                
+                
+                cols = dbc.Row([dbc.Col(src_child_), dbc.Col(dst_child_)], justify = 'center')
+
                 
                 open_choose_box = True
                 threadon_ = False
@@ -3029,7 +3112,7 @@ while True:
                 
                
                 
-                return [d1, heading_update, 'Training stopped', True, True, True, True, True, error, True, 1000000, open_choose_box, src_child, dst_child]
+                return [d1, heading_update, 'Training stopped', True, True, True, error, True, 1000000, open_choose_box, cols]
                 
                 
                 
@@ -3074,57 +3157,148 @@ while True:
             header = ''
           
           
-          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True, True, True, '', False, s4, open_choose_box, src_child, dst_child]
+          return [ img_disabled, heading_update,'['+header+'] '+msglist, True, True, True,  '', False, s4, open_choose_box, cols]
           
       else:
       
-          return [ d1, 'Start the Process', 'Choose an option', False, d3, False, False, False, '', False, s4, open_choose_box, src_child, dst_child]
+          return [ d1, 'Start the Process', 'Choose an option', False, d3, False,  '', False, s4, open_choose_box, cols]
     
+    
+    
+    @app.callback([Output('src_face_img', 'src'),Output('src_frames_nos', 'children'), Output('add_src_face', 'disabled'), Output('src_slider', 'max'), Output('src_slider', 'marks')],
+                [Input('select_src_face', 'value'), Input('add_src_face', 'n_clicks'), Input('src_slider', 'value')])
+                
+    def update(faceid, n, k):
+        
+        global labelsdict
+        global total_src_frames
+        global total_src_frames_paths
+        global src_face_list 
+        trigger_id = dash.callback_context.triggered[0]['prop_id']
+        
+        
+        if trigger_id == 'select_src_face.value':
+        
+            k = 0 
+        
+        print (k)
+        
+        try:
+            src_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['src_face_labels'][int(faceid)][k]), height = 64))[-1]).decode())
+        except:
 
-    @app.callback(Output('confirm_delete', 'children'),
-                   [Input('okay_face_select', 'n_clicks')],
-                   [State('src_img_'+ str(idx), 'checked') for idx in range(len(labelsdict['src_face_labels']))]+
-                   [State('dst_img_'+ str(idx), 'checked') for idx in range(len(labelsdict['dst_face_labels']))])
-                   
+            src_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['src_face_labels'][int(faceid)][0]), height = 64))[-1]).decode())
+            
+               
+                
+        n_frames = len(labelsdict['src_face_labels'][int(faceid)])
+        print (n_frames)
+        
+        if n and trigger_id == 'add_src_face.n_clicks':
+            total_src_frames = total_src_frames + n_frames
+            for i in labelsdict['src_face_labels'][int(faceid)]:
+                total_src_frames_paths.append(i)
+            
+            src_face_list.append(faceid)
+        
+        if faceid in src_face_list:
+            isdisabled = True
+        else:
+            isdisabled = False
+        print (src_face_list, faceid, isdisabled)
+        return src_img, str(total_src_frames) + ' frames added', isdisabled, n_frames, {int(n_frames/2):str(n_frames) + ' frames'}
+            
+        
+        
+    @app.callback([Output('dst_face_img', 'src'),Output('dst_frames_nos', 'children'), Output('add_dst_face', 'disabled'),Output('dst_slider', 'max'), Output('dst_slider', 'marks')],
+                [Input('select_dst_face', 'value'), Input('add_dst_face', 'n_clicks'), Input('dst_slider', 'value')])
+                
+    def update(faceid, n, k):
+        
+        global labelsdict
+        global total_dst_frames
+        global total_dst_frames_paths
+        global dst_face_list 
+        trigger_id = dash.callback_context.triggered[0]['prop_id']
+        
+        if trigger_id == 'select_dst_face.value':
+            print('ss')
+        
+            k = 0
+            
+        print (k)
+        try:
+            dst_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['dst_face_labels'][int(faceid)][k]), height = 64))[-1]).decode())
+        except:
+        
+            dst_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['dst_face_labels'][int(faceid)][0]), height = 64))[-1]).decode())
+        
+        n_frames = len(labelsdict['dst_face_labels'][int(faceid)])
+        print (n_frames)
+        
+        if n and trigger_id == 'add_dst_face.n_clicks':
+            total_dst_frames = total_dst_frames + n_frames
+            for i in labelsdict['dst_face_labels'][int(faceid)]:
+                total_dst_frames_paths.append(i)
+            
+            dst_face_list.append(faceid)
+        
+        if faceid in dst_face_list:
+            isdisabled = True
+        else:
+            isdisabled = False
+        print (dst_face_list, faceid, isdisabled)
+        return dst_img, str(total_dst_frames) + ' frames added', isdisabled, n_frames, {int(n_frames/2):str(n_frames) + ' frames'}
+                    
     
-    def update_(n, *checked):
+    
+    
+    
+    
+    @app.callback([Output('confirm_delete', 'children'),Output('okay_face_select_text', 'children'), 
+                    Output('okay_face_select_text', 'disabled'), Output('select_src_face', 'disabled'), Output('select_dst_face', 'disabled'), Output('src_slider', 'disabled'),
+                    Output('dst_slider', 'disabled')],
+                 [Input('okay_face_select', 'n_clicks')])
+    
+    
+    def update(n):
     
         if n:
-            print (checked)
-            global labelsdict
+            global total_dst_frames_paths
+        
+            global total_src_frames_paths
             
-            src_n = len(labelsdict['src_face_labels'])
-            dst_n = len(labelsdict['dst_face_labels'])
+            if len(total_dst_frames_paths) >0 and len(total_src_frames_paths)>0:
             
-            for i,j in zip(checked[:src_n], labelsdict['src_face_labels'].keys()):
-
-
-                if not i:
+                all_src_files = glob.glob('workspace/data_src/aligned/*')
                 
-                    for k in labelsdict['src_face_labels'][j]:
-                    
-                        print (k)
-                    
-                        os.remove(k)
-                        
-                        
-            for i,j in zip(checked[src_n:], labelsdict['dst_face_labels'].keys()):
-
-
-                if not i:
+                all_src_files_delete = set(all_src_files) - set(total_src_frames_paths)
+                print (total_src_frames_paths)
+                print (all_src_files_delete)
+                for i in all_src_files_delete:
                 
-                    for k in labelsdict['dst_face_labels'][j]:
-                        print (k)
-                        os.remove(k)
+                    os.remove(i)
+                    
+                all_dst_files = glob.glob('workspace/data_dst/aligned/*')
+                
+                all_dst_files_delete = set(all_dst_files) - set(total_dst_frames_paths)
+                print (all_dst_files_delete)
+                for i in all_dst_files_delete:
+                
+                    os.remove(i)  
 
 
+                return " ", '', True, True,True,True,True
+                
+            else:
+            
+                
+                return dash.no_update, 'Please add frames', dash.no_update, dash.no_update, dash.no_update , dash.no_update, dash.no_update
+        
+    
+    
 
-
-            return  ' '   
-
-
-
-
+    
 
     
     
@@ -3508,4 +3682,4 @@ while True:
         
         return done, ""
         
-    app.run_server(debug=False, port =  8050)
+    app.run_server(debug=False, port =  8000)
