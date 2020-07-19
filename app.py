@@ -1,5 +1,5 @@
 while True:
-
+    from subprocess import getoutput
     import imutils
     import dash
     import dash_core_components as dcc
@@ -302,7 +302,9 @@ while True:
         return get_sec2time(time.time()-self.start_time)
 
     def Convert():
-            
+    
+    
+        global convert_id
             
           
         output_name = 'result' + '_' + convert_id + '.mp4'
@@ -1975,6 +1977,7 @@ while True:
         #threading.Thread(target=resetall, args=(), daemon=True).start()
         
        
+        os.system("for i in $(sudo lsof /dev/nvidia0 | grep python  | awk '{print $2}' | sort -u); do kill -9 $i; done")
         
         
         with open('/tmp/log.txt', 'r') as f:
@@ -1983,15 +1986,7 @@ while True:
         
         print (pids)
         
-        for pid_ in pids:
-        
-            try:
-                os.kill(int(pid_), signal.SIGTERM)
-                
-                print ('Ended')
-                
-            except:
-                pass
+        shutdown() 
             
         return  [ True, str(video_index()), str(duration()) + 's']
       
@@ -3618,6 +3613,11 @@ while True:
         global cfg_merge 
         done = 0
         global convert_id
+        
+        if convert_id == '':
+        
+            convert_id = (''.join(map(choice,["bcdfghjklmnpqrstvwxz","aeiouy"]*3)))
+            
         if n and trigger_id=='okay_merge.n_clicks':
         
             if os.path.isdir('/content/workspace/data_dst/merged'):
@@ -3627,7 +3627,7 @@ while True:
                 
             dict_1 = {'original':0, 'overlay':1, 'hist-match':2 ,'seamless':3 ,'seamless-hist-match':4 , 'raw-rgb':5 , 'raw-predict':6}
             
-            dict_2 = {0: 'none', 1:'rct',2:'lct',3:'mkl',4:'mkl-m',5:'idt',6:'idt-m',7:'sot-m',8:'mix-m'}
+            dict_2 = {0: 'None', 1:'rct',2:'lct',3:'mkl',4:'mkl-m',5:'idt',6:'idt-m',7:'sot-m',8:'mix-m'}
             
             with open('/content/DeepFaceLab/settings.py', 'a') as f:
 
@@ -3638,7 +3638,15 @@ while True:
                 f.write("\nblur_mask_modifier ="+ str(cfg_merge.blur_mask_modifier))
                 f.write("\nmotion_blur_power = "+ str(cfg_merge.motion_blur_power))
                 #f.write("\noutput_face_scale = "+ cfg_merge)
-                f.write("\ncolor_transfer_mode = '"+ dict_2[cfg_merge.color_transfer_mode]+"'")
+
+                if cfg_merge.color_transfer_mode == 0:
+
+                  f.write("\ncolor_transfer_mode = None")
+
+                else:
+
+                  f.write("\ncolor_transfer_mode = '"+ dict_2[cfg_merge.color_transfer_mode]+"'")
+
                 #f.write("\nsuper_resolution_power = "+ cfg_merge)
                 f.write("\nimage_denoise_power = "+ str(cfg_merge.image_denoise_power))
                 #f.write("\nbicubic_degrade_power = "+ cfg_merge)
@@ -3665,14 +3673,20 @@ while True:
         if n and trigger_id=='interval-1.n_intervals':
             
             number_of_files = len(os.listdir('/content/workspace/data_dst/merged'))
-            total_number_of_files = len(os.listdir('/content/workspace/data_dst/aligned'))
+            total_number_of_files = len(os.listdir('/content/workspace/data_dst/'))-2 
             
             done =  int((number_of_files/total_number_of_files)*100)
         
         
             if os.path.isfile('/content/drive/My Drive/result_' + convert_id + '.mp4'):
+
+                time.sleep(10)
             
-                done_ = "Completed. "
+                fid = getoutput("xattr -p 'user.drive.id' '/content/drive/My Drive/result_'"+convert_id+"'.mp4'")
+                url = 'https://docs.google.com/file/d/'+fid
+
+            
+                done_ = [html.Br(), "Completed. ", html.A('Download here', href = url)]
             
             else:
                 done_ =  [html.Br(), "Converting frames ", dbc.Spinner(size="sm")]   
