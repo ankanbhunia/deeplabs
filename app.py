@@ -309,14 +309,14 @@ while True:
           
         output_name = 'result' + '_' + convert_id + '.mp4'
 
-        #print ('###############################' + output_name)
+        ##########print ('###############################' + output_name)
 
         os.system('echo | python DeepFaceLab/main.py merge --input-dir workspace/data_dst --output-dir workspace/data_dst/merged --output-mask-dir workspace/data_dst/merged_mask --aligned-dir workspace/data_dst/aligned --model-dir workspace/model --model SAEHD')
         os.system('echo | python DeepFaceLab/main.py videoed video-from-sequence --input-dir workspace/data_dst/merged --output-file workspace/'+output_name+' --reference-file workspace/data_dst.mp4 --include-audio')
         os.system('cp /content/workspace/'+output_name+' /content/drive/My\ Drive/')
         # need to install xattr
         
-        #print ('###############################' + 'convertion done')
+        ##########print ('###############################' + 'convertion done')
         
        
     
@@ -325,7 +325,7 @@ while True:
 
       os.system('zip -r -q workspace_'+convert_id+'.zip workspace'); 
       os.system('cp /content/workspace_'+convert_id+'.zip /content/drive/My\ Drive/')
-      #print ('###############################' + 'save_workspace_data')
+      ##########print ('###############################' + 'save_workspace_data')
 
     def save_workspace_model():
 
@@ -334,22 +334,22 @@ while True:
         time.sleep(3600*2)
 
         os.system('zip -ur workspace_'+convert_id+'.zip workspace/model'); os.system('cp /content/workspace_'+convert_id+'.zip /content/drive/My\ Drive/')
-        #print ('###############################' + 'save_workspace_model')
+        ##########print ('###############################' + 'save_workspace_model')
 
 
     from random import *
 
     def Main(q, labelsdict, run, option_id):
         
-        #print ('############')
-        #print (mode)
+        ##########print ('############')
+        ##########print (mode)
          
         global option_
         global thread_list
         import os
         global convert_id
         import time
-        #print (option_)
+        ##########print (option_)
 
         model = [i['label'] for i in option_ if i['value'] == int(option_id)][0]
         
@@ -763,84 +763,84 @@ while True:
                             
                         
                         q.put  ('Extracting Source frames ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/")
-                    if p != 0: 
-                        q.put('Error while extracting source frames! ')
-                        return False
-                    
-                    q.put  ('Denoising Source frames ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
-                    if p != 0: 
-                        q.put('Error while denoising source frames! ')
-                        return False
-                    
-                    q.put  ('Extracting Source faces ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
-                    if p != 0: 
-                        q.put('Error during extracting source faces! ')
-                        return False
-                    
-                   
-                    
-                    
+                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/")
+                        if p != 0: 
+                            q.put('Error while extracting source frames! ')
+                            return False
+                        
+                        q.put  ('Denoising Source frames ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
+                        if p != 0: 
+                            q.put('Error while denoising source frames! ')
+                            return False
+                        
+                        q.put  ('Extracting Source faces ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
+                        if p != 0: 
+                            q.put('Error during extracting source faces! ')
+                            return False
+                        
+                       
+                        
+                        
 
-                    q.put  ('Extracting Target frames ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
-                    if p != 0: 
-                        q.put('Error while extracting target frames! ')
-                        return False
-                    
-                    q.put  ('Denoising Target frames ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_dst --factor 1")
-                    if p != 0: 
-                        q.put('Error while denoising target frames! ')
-                        return False
-                    
-                    q.put  ('Extracting Target faces ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_dst --output-dir /content/workspace/data_dst/aligned --detector s3fd")
-                    if p != 0: 
-                        q.put('Error during extracting target faces! ')
-                        return False
-                    
-                    
-                    
-                    q.put  ('Face clustering')
-                    
-                    
-                    labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
-                    labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
-                    
-                    
-                    run.value = 1
-                    
-                    
-                    while True:
-                    
-                        if run.value:
+                        q.put  ('Extracting Target frames ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/")
+                        if p != 0: 
+                            q.put('Error while extracting target frames! ')
+                            return False
                         
-                            time.sleep(4)
+                        q.put  ('Denoising Target frames ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_dst --factor 1")
+                        if p != 0: 
+                            q.put('Error while denoising target frames! ')
+                            return False
+                        
+                        q.put  ('Extracting Target faces ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_dst --output-dir /content/workspace/data_dst/aligned --detector s3fd")
+                        if p != 0: 
+                            q.put('Error during extracting target faces! ')
+                            return False
+                        
+                        
+                        
+                        q.put  ('Face clustering')
+                        
+                        
+                        labelsdict['src_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_src/aligned')
+                        labelsdict['dst_face_labels'] = ffc.Get_face_clustered_labels('workspace/data_dst/aligned')
+                        
+                        
+                        run.value = 1
+                        
+                        
+                        while True:
+                        
+                            if run.value:
                             
-                        else:
+                                time.sleep(4)
+                                
+                            else:
+                            
+                                break
                         
-                            break
-                    
-                    
-                    
-                    
-                    
-                    
-                    q.put  (' Enhancing Source Faces ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
-                    if p != 0: 
-                        q.put('Error during source face enhancement process! ')
-                        return False
                         
-                    q.put  ('Enhancing Target Faces ')
-                    p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
-                    if p != 0: 
-                        q.put('Error during target face enhancement process! ')
-                        return False
                         
+                        
+                        
+                        
+                        q.put  (' Enhancing Source Faces ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_src/aligned")
+                        if p != 0: 
+                            q.put('Error during source face enhancement process! ')
+                            return False
+                            
+                        q.put  ('Enhancing Target Faces ')
+                        p = os.system("echo | python /content/DeepFaceLab/main.py facesettool enhance --input-dir /content/workspace/data_dst/aligned")
+                        if p != 0: 
+                            q.put('Error during target face enhancement process! ')
+                            return False
+                            
                         
                         q.put  ('Extracting face masks ')
                         p = os.system('python face_seg.py')
@@ -889,7 +889,7 @@ while True:
         
         
             convert_id = model.split('_')[-1].split('.')[0]
-            #print (convert_id)
+            ##########print (convert_id)
             
             q.put('#ID-' + convert_id)
             
@@ -1378,7 +1378,7 @@ while True:
                 align="center",
                   
             )
-    print (len(npy_files))
+    #########print (len(npy_files))
     if len(npy_files)>0:
         convert_disabled = False
         
@@ -1656,11 +1656,11 @@ while True:
         [Input("Upload-addclick", "n_clicks")], [State("toggle-add-upload", "is_open")]
     )
     def open_toast2(n, is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open
@@ -1674,11 +1674,11 @@ while True:
         [Input("toggle-add-upload", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
 
@@ -1688,11 +1688,11 @@ while True:
         [Input("Youtube-addclick", "n_clicks")], [State("toggle-add-utube", "is_open")]
     )
     def open_toast2(n, is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open
@@ -1706,11 +1706,11 @@ while True:
         [Input("toggle-add-utube", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
         
@@ -1721,9 +1721,9 @@ while True:
     )
     def open_toast3(n, is_open, is_active):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open, not is_active
@@ -1765,9 +1765,9 @@ while True:
 
     def update_button(n_clicks, butt):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         global camera
         
@@ -1804,15 +1804,15 @@ while True:
 
     def update_upload(data):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         if data is not None:
             content_type, content_string = data.split(',')
 
             decoded = base64.b64decode(content_string)
-            ##print (decoded)
+            ###########print (decoded)
             with open('videos/Source/Upload/temp.mp4', "wb") as fp:
                 fp.write(decoded)
             global src_vids
@@ -1852,9 +1852,9 @@ while True:
 
 
     def update_youtube(n, url):
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         
         if n is not None:
@@ -1925,9 +1925,9 @@ while True:
 
     def update_details(t1, t2, n, n1, n2, s2, s3, s4):
 
-      print('######################################################')
-      print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-      print('######################################################')
+      ##print'######################################################')
+      #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+      ##print'######################################################')
 
 
       trigger_id = dash.callback_context.triggered[0]['prop_id']
@@ -1959,8 +1959,8 @@ while True:
         global thread_list
         
         
-        print (subprocess_list)
-        print (thread_list)
+        #########print (subprocess_list)
+        #########print (thread_list)
         
         for i in thread_list:
 
@@ -1984,7 +1984,7 @@ while True:
             pids = [i[:-1] for i in f.readlines()] 
             f.close()
         
-        print (pids)
+        #########print (pids)
         
         shutdown() 
             
@@ -2031,7 +2031,7 @@ while True:
       elif t1 == 'True' or t2 == 'True':
 
         output = 'You have added total ' + str(video_index()) + ' video(s). You can add more videos' 
-        #print ('ffff')
+        ##########print ('ffff')
 
         return [ False, str(video_index()), str(duration()) + 's']
 
@@ -2057,9 +2057,9 @@ while True:
 
     def upload_playback_utube(rang, n_clicks, s):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         global src_vids
         global src_vids_clip
@@ -2087,13 +2087,13 @@ while True:
             
            
        
-            #print (n_clicks)
+            ##########print (n_clicks)
             
             #res, frame = cap.read()
             #frame = cv2.resize(frame, (100, 70),interpolation=cv2.INTER_CUBIC)
             #ret, frame = cv2.imencode('.png', frame)
             #frame = base64.b64encode(frame)
-            ##print (rang)
+            ###########print (rang)
             str_time = T*rang[0]/1000
             end_time = T*rang[1]/1000
             VID = VID.subclip(str_time, end_time)
@@ -2109,8 +2109,8 @@ while True:
             output = 'You have added total ' + str(video_index()) + ' video(s). You can add more videos.' 
 
             length = VID.duration
-            #print ('jkbdasflsfkafbkasbkfasaskasksbkabkaj' )
-            #print (length)
+            ##########print ('jkbdasflsfkafbkasbkfasaskasksbkabkaj' )
+            ##########print (length)
 
             return [s, 'True', str(int((length))) + 's', {0: get_sec2time(str_time), 1000: get_sec2time(end_time)}]
 
@@ -2121,7 +2121,7 @@ while True:
             global slider_prev_instance 
         
       
-            #print (totalNoFrames)
+            ##########print (totalNoFrames)
             if slider_prev_instance[0] == rang[0]:
                 time_n = int(T*rang[1]/1000)
             elif slider_prev_instance[1] == rang[1]:
@@ -2146,7 +2146,7 @@ while True:
 
             #frame = cv2.resize(frame, (100, 70),interpolation=cv2.INTER_CUBIC)
 
-            ##print (res)
+            ###########print (res)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             ret, frame = cv2.imencode('.png', frame)
             #frame = cv2.resize(frame, (128,128))
@@ -2167,9 +2167,9 @@ while True:
 
     def upload_playback(rang,n_clicks,s):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         global src_vids
         global src_vids_clip
@@ -2210,7 +2210,7 @@ while True:
             global slider_prev_instance 
         
       
-            #print (totalNoFrames)
+            ##########print (totalNoFrames)
             if slider_prev_instance[0] == rang[0]:
                 time_n = int(T*rang[1]/1000)
             elif slider_prev_instance[1] == rang[1]:
@@ -2229,7 +2229,7 @@ while True:
 
             #frame = cv2.resize(frame, (100, 70),interpolation=cv2.INTER_CUBIC)
 
-            ##print (res)
+            ###########print (res)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             ret, frame = cv2.imencode('.png', frame)
 
@@ -2252,11 +2252,11 @@ while True:
         [Input("Upload-addclick_2", "n_clicks")], [State("toggle-add-upload_2", "is_open")]
     )
     def open_toast2(n, is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open
@@ -2270,11 +2270,11 @@ while True:
         [Input("toggle-add-upload_2", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
 
@@ -2283,11 +2283,11 @@ while True:
         [Input("Youtube-addclick_2", "n_clicks")], [State("toggle-add-utube_2", "is_open")]
     )
     def open_toast2(n, is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open
@@ -2301,11 +2301,11 @@ while True:
         [Input("toggle-add-utube_2", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
 
@@ -2316,9 +2316,9 @@ while True:
     )
     def open_toast3(n, is_open, is_active):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open, not is_active
@@ -2340,9 +2340,9 @@ while True:
 
     def update_button(n_clicks, butt):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         global camera
         
@@ -2386,9 +2386,9 @@ while True:
          )
     def update_details(t1, t2, n, s2, s3, s4):
 
-      print('######################################################')
-      print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-      print('######################################################')
+      ##print'######################################################')
+      #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+      ##print'######################################################')
 
       trigger_id = dash.callback_context.triggered[0]['prop_id']
       trgger_value = dash.callback_context.triggered[0]['value']
@@ -2407,7 +2407,7 @@ while True:
       elif t1 == 'True' or t2 == 'True':
 
         #output = 'You have added total ' + str(video_index2()) + ' video(s). You can add more videos' 
-        #print ('ffff')
+        ##########print ('ffff')
 
         return [ False, str(video_index2()), str(duration2()) + 's']
 
@@ -2422,15 +2422,15 @@ while True:
 
     def update_upload(data):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         if data is not None:
             content_type, content_string = data.split(',')
 
             decoded = base64.b64decode(content_string)
-            ##print (decoded)
+            ###########print (decoded)
             with open('videos/Target/Upload/temp.mp4', "wb") as fp:
                 fp.write(decoded)
                 
@@ -2470,9 +2470,9 @@ while True:
 
     def update_youtube(n, url):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         
         if n is not None:
@@ -2535,9 +2535,9 @@ while True:
 
     def upload_playback_utube(rang, n_clicks, s):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         global tar_vids
         global tar_vids_clip
@@ -2548,8 +2548,8 @@ while True:
 
         trigger_id = dash.callback_context.triggered[0]['prop_id']
         
-        #print ('#############################################################################################3')
-        #print (trigger_id)
+        ##########print ('#############################################################################################3')
+        ##########print (trigger_id)
         trgger_value = dash.callback_context.triggered[0]['value']
         fps = VID.fps 
 
@@ -2578,7 +2578,7 @@ while True:
             global slider_prev_instance2 
         
       
-            #print (totalNoFrames)
+            ##########print (totalNoFrames)
             if slider_prev_instance2[0] == rang[0]:
                 time_n = int(T*rang[1]/1000)
             elif slider_prev_instance2[1] == rang[1]:
@@ -2616,9 +2616,9 @@ while True:
 
     def upload_playback(rang,n_clicks,s):
 
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         
         global tar_vids
         global tar_vids_clip
@@ -2659,7 +2659,7 @@ while True:
             global slider_prev_instance 
         
       
-            #print (totalNoFrames)
+            ##########print (totalNoFrames)
             if slider_prev_instance[0] == rang[0]:
                 time_n = int(T*rang[1]/1000)
             elif slider_prev_instance[1] == rang[1]:
@@ -2678,7 +2678,7 @@ while True:
 
             #frame = cv2.resize(frame, (100, 70),interpolation=cv2.INTER_CUBIC)
 
-            ##print (res)
+            ###########print (res)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
            
             ret, frame = cv2.imencode('.png', frame)
@@ -2696,9 +2696,9 @@ while True:
         [Input("Images-addclick", "n_clicks")],[State("toggle-add-Images", "is_open")]
     )
     def open_toast1(n, is_open):
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         try:
             if n>0:
                 return not is_open
@@ -2714,11 +2714,11 @@ while True:
         [Input("toggle-add-Images", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
         
@@ -2730,11 +2730,11 @@ while True:
         [Input("Settings-addclick", "n_clicks")], [State("toggle-add-Settings", "is_open")]
     )
     def open_toast2(n, is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         if n:
             return not is_open
@@ -2750,11 +2750,11 @@ while True:
 
 
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
 
@@ -2783,14 +2783,14 @@ while True:
         [Input('Images-addclick', 'n_clicks'), Input('Images-refresh', 'n_clicks')])
 
     def update_images(n, n2):
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
 
         jpgs = glob.glob('workspace/model/*.jpg')
         
-        #print (jpgs)
+        ##########print (jpgs)
         
         if len(jpgs)>1:
             
@@ -2823,9 +2823,9 @@ while True:
         [Input("Start-click", "n_clicks")],[State("toggle-add-Progress", "is_open")]
     )
     def open_toast1(n, is_open):
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
         try:
             if n>0:
                 return not is_open
@@ -2841,11 +2841,11 @@ while True:
         [Input("toggle-add-Progress", "is_open")]
     )
     def open_toast2(is_open):
-        #print ('utubessssff')
+        ##########print ('utubessssff')
         
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return is_open
         
@@ -2854,9 +2854,9 @@ while True:
     @app.callback(Output("tempvar", "value"), [Input('Start-click', 'n_clicks')])
 
     def update_var(inf):
-        print('######################################################')
-        print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-        print('######################################################')
+        ##print'######################################################')
+        #########print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
+        ##print'######################################################')
 
         return ''
 
@@ -2896,10 +2896,7 @@ while True:
 
     def update_start(n, intval,confirm_delete, t1, d1, model_name, d3, s1, s4):
 
-      if dash.callback_context.triggered[0]['prop_id'] != 'interval-1.n_intervals':
-          print('######################################################')
-          print (dash.callback_context.triggered[0]['prop_id'], currentframe().f_lineno)
-          print('######################################################')
+    
 
       global threadon 
       global msglist
@@ -2970,7 +2967,7 @@ while True:
             
                     
             watch.start()
-            #print ( 'ddabjhjkasfawbwfbjbkwfbkfabkfbkfafbkkbaf')
+            ##########print ( 'ddabjhjkasfawbwfbjbkwfbkfabkfbkfafbkkbaf')
 
             threadon = False
 
@@ -2989,7 +2986,7 @@ while True:
             
                 #src_imgs = []
                 
-                print (labelsdict['src_face_labels'])
+                #########print (labelsdict['src_face_labels'])
                 
                 
                 #for cli in labelsdict['src_face_labels']:
@@ -3014,9 +3011,9 @@ while True:
 
                  #   dst_imgs.append('data:image/png;base64,{}'.format(frame.decode()))    
                     
-                #print ('#######################################################')
-                #print (len(src_imgs))
-                #print (lesrc_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', cv2.imread(labelsdict['src_face_labels'][0][0]))[-1]).decode())n(dst_imgs))
+                ##########print ('#######################################################')
+                ##########print (len(src_imgs))
+                ##########print (lesrc_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', cv2.imread(labelsdict['src_face_labels'][0][0]))[-1]).decode())n(dst_imgs))
                 
                 
                 src_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['src_face_labels'][0][0]), height = 64))[-1]).decode())
@@ -3083,7 +3080,7 @@ while True:
           if message:
             
 
-            #print('fafas')
+            ###print'fafas')
             
             
             
@@ -3176,7 +3173,7 @@ while True:
         
             k = 0 
         
-        print (k)
+        #########print (k)
         
         try:
             src_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['src_face_labels'][int(faceid)][k]), height = 64))[-1]).decode())
@@ -3187,7 +3184,7 @@ while True:
                
                 
         n_frames = len(labelsdict['src_face_labels'][int(faceid)])
-        print (n_frames)
+        #########print (n_frames)
         
         if n and trigger_id == 'add_src_face.n_clicks':
             total_src_frames = total_src_frames + n_frames
@@ -3200,7 +3197,7 @@ while True:
             isdisabled = True
         else:
             isdisabled = False
-        print (src_face_list, faceid, isdisabled)
+        #########print (src_face_list, faceid, isdisabled)
         return src_img, str(total_src_frames) + ' frames added', isdisabled, n_frames, {int(n_frames/2):str(n_frames) + ' frames'}
             
         
@@ -3217,11 +3214,11 @@ while True:
         trigger_id = dash.callback_context.triggered[0]['prop_id']
         
         if trigger_id == 'select_dst_face.value':
-            print('ss')
+            ##print'ss')
         
             k = 0
             
-        print (k)
+        #########print (k)
         try:
             dst_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['dst_face_labels'][int(faceid)][k]), height = 64))[-1]).decode())
         except:
@@ -3229,7 +3226,7 @@ while True:
             dst_img = 'data:image/png;base64,{}'.format(base64.b64encode(cv2.imencode('.png', imutils.resize(cv2.imread(labelsdict['dst_face_labels'][int(faceid)][0]), height = 64))[-1]).decode())
         
         n_frames = len(labelsdict['dst_face_labels'][int(faceid)])
-        print (n_frames)
+        #########print (n_frames)
         
         if n and trigger_id == 'add_dst_face.n_clicks':
             total_dst_frames = total_dst_frames + n_frames
@@ -3242,7 +3239,7 @@ while True:
             isdisabled = True
         else:
             isdisabled = False
-        print (dst_face_list, faceid, isdisabled)
+        #########print (dst_face_list, faceid, isdisabled)
         return dst_img, str(total_dst_frames) + ' frames added', isdisabled, n_frames, {int(n_frames/2):str(n_frames) + ' frames'}
                     
     
@@ -3268,8 +3265,8 @@ while True:
                 all_src_files = glob.glob('workspace/data_src/aligned/*')
                 
                 all_src_files_delete = set(all_src_files) - set(total_src_frames_paths)
-                print (total_src_frames_paths)
-                print (all_src_files_delete)
+                #########print (total_src_frames_paths)
+                #########print (all_src_files_delete)
                 for i in all_src_files_delete:
                 
                     os.remove(i)
@@ -3277,7 +3274,7 @@ while True:
                 all_dst_files = glob.glob('workspace/data_dst/aligned/*')
                 
                 all_dst_files_delete = set(all_dst_files) - set(total_dst_frames_paths)
-                print (all_dst_files_delete)
+                #########print (all_dst_files_delete)
                 for i in all_dst_files_delete:
                 
                     os.remove(i)  
@@ -3392,7 +3389,7 @@ while True:
                     
                     os.system('echo | python DeepFaceLab/merger/Merger_preview.py')
                     
-                    print ('dfggadgsg')
+                    #########print ('dfggadgsg')
                     
                     #npy_files = [i for i in os.listdir('/tmp') if i.endswith('.npy')]
                     
@@ -3425,7 +3422,7 @@ while True:
                     
                     os.system('echo | python DeepFaceLab/merger/Merger_preview.py')
                     
-                    print ('dfggadgsg')
+                    #########print ('dfggadgsg')
                     
                     
                     
@@ -3485,10 +3482,8 @@ while True:
         trigger_id = dash.callback_context.triggered[0]['prop_id']
 
 
-        print (v_plus_size,h_minus_size, h_plus_size, v_minus_size , v_plus_shift, h_minus_shift, h_plus_shift, v_minus_shift,
-                            refresh_img, mask_mode_, mode_, Erode_,Blur_ ,color_mode_, motion_blur_power_, blursharpen_amount_,
-                            image_denoise_power_,color_degrade_power_)
-        
+        #########print (v_plus_size,h_minus_size, h_plus_size, v_minus_size , v_plus_shift, h_minus_shift, h_plus_shift, v_minus_shift,
+     
         global horizontal_shear
         global vertical_shear
         global horizontal_shift
@@ -3561,7 +3556,7 @@ while True:
             npy_ = os.path.join('/tmp', npy_files[ind_preview])
         
             
-            #print (npy_)
+            ##########print (npy_)
             
             cfg_merge = merging_vars(
                    face_type = face_type,
@@ -3588,7 +3583,7 @@ while True:
             result, _ = Merger_tune.MergeMaskedFace_test(npy_, cfg_merge)
             result = imutils.resize(result*255, height=156)
             
-            print (result.shape)
+            #########print (result.shape)
             
             ret, frame = cv2.imencode('.png',result )
 
