@@ -409,21 +409,26 @@ while True:
                     
                     return False
                     
+              
+                q.put  ('Extracting frames ')
                 
-                q.put  ('Extracting Source frames ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/")
+                p = [subprocess.call("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_src.* --output-dir /content/workspace/data_src/", shell=True),
+                    subprocess.call("echo | python /content/DeepFaceLab/main.py videoed extract-video --input-file /content/workspace/data_dst.* --output-dir /content/workspace/data_dst/", shell=True)]
+                
+                
+                
                 if p != 0: 
                     q.put('Error while extracting source frames! ')
                     return False
                 
                 q.put  ('Denoising Source frames ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
+                p = subprocess.call("echo | python /content/DeepFaceLab/main.py videoed denoise-image-sequence --input-dir /content/workspace/data_src --factor 1")
                 if p != 0: 
                     q.put('Error while denoising source frames! ')
                     return False
                 
                 q.put  ('Extracting Source faces ')
-                p = os.system("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
+                p = subprocess.call("echo | python /content/DeepFaceLab/main.py extract --input-dir /content/workspace/data_src --output-dir /content/workspace/data_src/aligned --detector s3fd")
                 if p != 0: 
                     q.put('Error during extracting source faces! ')
                     return False
