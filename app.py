@@ -1052,45 +1052,6 @@ while True:
       return int(sum([i.duration for i in tar_vids_clip]))
       
       
-    image_filename = 'images/img1.jpg' # replace with your own image
-    img1 = base64.b64encode(open(image_filename, 'rb').read())
-
-    image_filename = 'images/img2.jpg' # replace with your own image
-    img2 = base64.b64encode(open(image_filename, 'rb').read())
-
-    image_filename = 'images/img3.jpg' # replace with your own image
-    img3 = base64.b64encode(open(image_filename, 'rb').read())
-
-
-    col1  = dbc.Card(
-        [
-            dbc.CardBody( html.Div(dbc.Checkbox( id = 'full_face'
-                    )), style = {'margin':'auto'}),
-            dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, src='data:image/png;base64,{}'.format(img1.decode()), bottom=True),
-        ],
-        style={"width": "6rem","height": "8rem"}
-    )
-
-
-    col2  = dbc.Card(
-        [
-            dbc.CardBody( html.Div(dbc.Checkbox( id = 'head'
-                    )), style = {'margin':'auto'}),
-            dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, src='data:image/png;base64,{}'.format(img2.decode()), bottom=True),
-        ],
-        style={"width": "6rem","height": "8rem"}
-    )
-
-    col3  = dbc.Card(
-        [
-            dbc.CardBody( html.Div(dbc.Checkbox( id = 'half_face'
-                    )), style = {'margin':'auto'}),
-            dbc.CardImg(style = {'width' : '80px', 'height' : '80px', 'margin':'auto'}, src='data:image/png;base64,{}'.format(img3.decode()), bottom=True),
-        ],
-        style={"width": "6rem","height": "8rem"})
-
-      
-      
       
 
     global option_  
