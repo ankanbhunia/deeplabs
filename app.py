@@ -947,7 +947,7 @@ while True:
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
     app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP, "https://use.fontawesome.com/releases/v5.7.2/css/all.css"])
-
+    app.title = 'FakeLab'
     global slider_prev_instance 
     slider_prev_instance = [0,1000]
 
@@ -1583,7 +1583,7 @@ while True:
 
     app.layout = dbc.Container(
         [
-            html.H1(["Deep", dbc.Badge("Fakes", className="ml-1")],  style={"text-align":"center"}),
+            html.H1(["Fake", dbc.Badge("Lab", className="ml-1")],  style={"text-align":"center"}),
             
             tabs,
             
