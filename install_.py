@@ -64,10 +64,10 @@ if not Path("/content/workspace").exists():
   os.system('mkdir /content/workspace; mkdir /content/workspace/data_src; mkdir /content/workspace/data_src/aligned; mkdir /content/workspace/data_dst; mkdir /content/workspace/data_dst/aligned; mkdir /content/workspace/model')  
 
 
-print("\nDone!")
-os.system('wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
-os.system('unzip ngrok-stable-linux-amd64.zip')
+#print("\nDone!")
+#os.system('wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip')
+#os.system('unzip ngrok-stable-linux-amd64.zip')
 
 
-os.system('./ngrok authtoken 5vhWvAzJGtsJbnVp4V5di_6KNVTN8BpHMqKYyAaFFXQ')
+#os.system('./ngrok authtoken 5vhWvAzJGtsJbnVp4V5di_6KNVTN8BpHMqKYyAaFFXQ')
 print("Done!")
