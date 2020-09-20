@@ -1,5 +1,7 @@
 while True:
     from IPython.display import clear_output
+    import zipfile
+    import tqdm
     from subprocess import getoutput
     import imutils
     import dash
@@ -905,7 +907,17 @@ while True:
                 
                 q.put('Downlaoding Workspace')
                 
-                os.system('echo A | unzip /content/drive/My\ Drive/'+model_name)
+                zf = zipfile.ZipFile('/content/drive/My\ Drive/'+model_name)
+
+                uncompress_size = sum((file.file_size for file in zf.infolist()))
+
+                extracted_size = 0
+                
+                for file in tqdm.tqdm(zf.infolist()):
+                    extracted_size += file.file_size
+                    zf.extract(file)
+                    
+                #os.system('echo A | unzip /content/drive/My\ Drive/'+model_name)
                 
                 
                 
@@ -3326,7 +3338,15 @@ while True:
                 if os.path.isdir('/content/workspace/'):
                     shutil.rmtree('/content/workspace/')    
 
-                os.system('echo A | unzip /content/drive/My\ Drive/'+model_name)
+                zf = zipfile.ZipFile('/content/drive/My\ Drive/'+model_name)
+
+                uncompress_size = sum((file.file_size for file in zf.infolist()))
+
+                extracted_size = 0
+                
+                for file in tqdm.tqdm(zf.infolist()):
+                    extracted_size += file.file_size
+                    zf.extract(file)
                 
                 
                 check = len(os.listdir('/content/workspace/model/'))>5 
