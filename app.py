@@ -906,8 +906,8 @@ while True:
                 if not os.path.isdir('/content/workspace/model'): os.mkdir('/content/workspace/model')
                 
                 q.put('Downlaoding Workspace')
-                
-                zf = zipfile.ZipFile('/content/drive/My\ Drive/'+model_name)
+                import zipfile
+                zf = zipfile.ZipFile('/content/drive/My Drive/'+model_name)
 
                 uncompress_size = sum((file.file_size for file in zf.infolist()))
 
@@ -3337,8 +3337,8 @@ while True:
             
                 if os.path.isdir('/content/workspace/'):
                     shutil.rmtree('/content/workspace/')    
-
-                zf = zipfile.ZipFile('/content/drive/My\ Drive/'+model_name)
+                import zipfile
+                zf = zipfile.ZipFile('/content/drive/My Drive/'+model_name)
 
                 uncompress_size = sum((file.file_size for file in zf.infolist()))
 
