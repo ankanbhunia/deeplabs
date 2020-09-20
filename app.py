@@ -1,4 +1,5 @@
 while True:
+    from IPython.display import clear_output
     from subprocess import getoutput
     import imutils
     import dash
@@ -501,7 +502,7 @@ while True:
 
                 q.put('Training started')
 
-
+                clear_output()
                 p = os.system('echo | python DeepFaceLab/main.py train --training-data-src-dir workspace/data_src/aligned --training-data-dst-dir workspace/data_dst/aligned --pretraining-data-dir pretrain --model-dir workspace/model --model SAEHD')
 
                 if p != 0: 
@@ -551,7 +552,7 @@ while True:
                 thr2.daemon=True   
                 thr2.start()
                 thread_list.append(thr2)
-
+                clear_output()
                 q.put('Training started')
 
 
@@ -662,7 +663,7 @@ while True:
                     thr2.daemon=True   
                     thr2.start()
                     thread_list.append(thr2)
-
+                    clear_output()
                     q.put('Training started')
 
 
@@ -816,7 +817,7 @@ while True:
                         thr2.daemon=True   
                         thr2.start()
                         thread_list.append(thr2)
-
+                        clear_output()
                         q.put('Training started')
 
 
@@ -878,7 +879,7 @@ while True:
                 thr2.daemon=True   
                 thr2.start()
                 thread_list.append(thr2)
-
+                clear_output()
                 q.put('Training started')
 
 
@@ -926,7 +927,7 @@ while True:
                 thr2.daemon=True   
                 thr2.start()
                 thread_list.append(thr2)
-
+                clear_output()
                 q.put('Training started')
 
 
